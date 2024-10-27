@@ -2,6 +2,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { BiServer, BiTimeFive } from "react-icons/bi";
 import { IoMdAdd } from "react-icons/io";
 import { MdDriveFileRenameOutline } from "react-icons/md";
+import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 
@@ -26,7 +27,10 @@ export default function Compute() {
             placeholder="Filter compute you have access to"
           />
         </div>
-        <Button>Create Compute</Button>
+
+        <Link to="/compute/new-cluster">
+          <Button>Create Compute</Button>
+        </Link>
       </div>
 
       <div>
@@ -70,9 +74,12 @@ export default function Compute() {
                         Create compute to run workloads from your notebooks
                       </p>
                     </div>
-                    <Button variant={"outline"} className="shadow">
-                      Create Compute
-                    </Button>
+
+                    <Link to="/compute/new-cluster">
+                      <Button variant={"outline"} className="shadow">
+                        Create Compute
+                      </Button>
+                    </Link>
                   </div>
                 </td>
               </tr>
