@@ -1,19 +1,38 @@
 import { AiOutlineSearch } from "react-icons/ai";
-import { BiServer, BiTimeFive } from "react-icons/bi";
+import { BiServer, BiStop, BiTimeFive } from "react-icons/bi";
+import { BsStopFill } from "react-icons/bs";
+import { CiSettings } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
 import { MdDriveFileRenameOutline } from "react-icons/md";
+import { RxDotFilled, RxSwitch } from "react-icons/rx";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 
 interface Compute {
+  state: boolean;
   name: string;
-  runTime: number; //seconds
-  numNodes: number;
+  runTime: string;
+  numWorkers: number;
 }
 
 export default function Compute() {
-  const computes: Compute[] = [];
+  const computes: Compute[] = [
+    {
+      state: true,
+      name: "compute1",
+      runTime: "1.0 STS (Python 3.13, Node 20.18)",
+      numWorkers: 3,
+    },
+
+    {
+      state: false,
+      name: "compute1",
+      runTime: "1.0 STS (Python 3.13, Node 20.18)",
+      numWorkers: 3,
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-12">
       <h1 className="font-bold text-xl">Compute</h1>
@@ -39,6 +58,12 @@ export default function Compute() {
             <tr className=" ">
               <th className="text-start px-3  border-r text-foreground/80 text-sm">
                 <span className="flex gap-1 items-center">
+                  <RxSwitch />
+                  State
+                </span>
+              </th>
+              <th className="text-start px-3  border-r text-foreground/80 text-sm">
+                <span className="flex gap-1 items-center">
                   <MdDriveFileRenameOutline />
                   Name
                 </span>
@@ -55,17 +80,24 @@ export default function Compute() {
                   Nodes
                 </span>
               </th>
+
+              <th className="text-start px-3  text-foreground/80 text-sm">
+                <span className="flex gap-1 items-center">
+                  <CiSettings className="text-xl" />
+                  Actions
+                </span>
+              </th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td colSpan={3}>
+              <td colSpan={4}>
                 <hr className="my-1" />
               </td>
             </tr>
             {computes.length === 0 && (
               <tr>
-                <td colSpan={3}>
+                <td colSpan={4}>
                   <div className="flex flex-col gap-3 items-center p-6 text-foreground/70">
                     <IoMdAdd className="text-7xl opacity-50" />
                     <div className="text-center">
@@ -84,6 +116,37 @@ export default function Compute() {
                 </td>
               </tr>
             )}
+            {computes.map((compute) => (
+              <tr key={compute.name}>
+                <td className="px-3 border-r text-foreground/80 text-sm">
+                  {compute.state ? (
+                    <span className="flex items-center">
+                      <RxDotFilled className="text-3xl text-green-600" />
+                      Running
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      <BiStop className="text-xl text-red-700 mx-1" /> Stopped
+                    </span>
+                  )}
+                </td>
+                <td className="px-3 border-r text-foreground/80 text-sm">
+                  {compute.name}
+                </td>
+                <td className="px-3 border-r text-foreground/80 text-sm">
+                  {compute.runTime}
+                </td>
+                <td className="px-3 text-foreground/80 text-sm">
+                  {compute.numWorkers}
+                </td>
+
+                <td className="px-3 text-foreground/80 text-sm">
+                  <button className="px-3 hover:opacity-50">
+                    <BsStopFill className="text-2xl" />
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
