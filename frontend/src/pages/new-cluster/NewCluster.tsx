@@ -1,3 +1,7 @@
 export default function NewCluster() {
-  return <div>NewCluster</div>;
+  return (
+    <div>
+      <div></div>
+    </div>
+  );
 }
