@@ -18,7 +18,7 @@ export default function Layout() {
       <div className="flex-1 flex ">
         <nav
           className={`
-            min-h-screen py-2 bg-foreground border-y text-background/90
+             py-2 bg-foreground border-y text-background/90
             border-background/20 flex flex-col gap-2`}
         >
           <NavigationLink Icon={IoMdAddCircleOutline} title="New" to="/" />
