@@ -9,10 +9,10 @@ export default function Layout() {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="px-6 bg-foreground text-background flex justify-between items-center p-2">
-        <h1 className="flex items-center gap-3 text font-bold text-background/90 ">
+        <div className="flex items-center gap-3 text font-bold text-background/90 ">
           <BsBricks />
           mybricks
-        </h1>
+        </div>
         <Button className="bg-background/20 rounded-full w-8 h-8">Y</Button>
       </div>
       <div className="flex-1 flex ">
