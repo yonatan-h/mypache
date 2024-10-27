@@ -1,40 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Vite + React + TS</title>
   </head>
   <body>
-    <h1>Todos</h1>
-    <ul id="todos"></ul>
-    <form id="add-form">
-      <input type="text" name="todo" placeholder="Add Todo" />
-    </form>
-
-    <script>
-      const todosUl = document.getElementById("todos");
-      const todoForm = document.getElementById("add-form");
-
-      const todos = ["Buy milk", "Go to gym"];
-
-      function refreshTodos() {
-        todosUl.innerHTML = "";
-        for (const todo of todos) {
-          const li = document.createElement("li");
-          li.textContent = todo;
-          todosUl.appendChild(li);
-        }
-      }
-
-      todoForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const todo = e.target.elements.todo.value;
-        todos.push(todo);
-        refreshTodos();
-      });
-
-      refreshTodos();
-    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
