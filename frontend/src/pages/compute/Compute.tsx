@@ -1,6 +1,5 @@
 import { AiOutlineSearch } from "react-icons/ai";
 import { BiServer, BiStop, BiTimeFive } from "react-icons/bi";
-import { BsStopFill } from "react-icons/bs";
 import { CiSettings } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
 import { MdDriveFileRenameOutline } from "react-icons/md";
@@ -141,9 +140,13 @@ export default function Compute() {
                 </td>
 
                 <td className="px-3 text-foreground/80 text-sm">
-                  <button className="px-3 hover:opacity-50">
-                    <BsStopFill className="text-2xl" />
-                  </button>
+                  {compute.state ? (
+                    <button className="px-3 hover:opacity-50">
+                      <BiStop className="text-2xl" />
+                    </button>
+                  ) : (
+                    <span className="px-5">-</span>
+                  )}
                 </td>
               </tr>
             ))}
