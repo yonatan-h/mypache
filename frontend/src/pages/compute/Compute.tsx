@@ -1,5 +1,6 @@
 import { AiOutlineSearch } from "react-icons/ai";
 import { BiServer, BiStop, BiTimeFive } from "react-icons/bi";
+import { CgSpinner } from "react-icons/cg";
 import { CiSettings } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
 import { MdDriveFileRenameOutline } from "react-icons/md";
@@ -9,7 +10,7 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 
 interface Compute {
-  state: boolean;
+  state: "live" | "stopped" | "loading";
   name: string;
   runTime: string;
   numWorkers: number;
@@ -18,15 +19,22 @@ interface Compute {
 export default function Compute() {
   const computes: Compute[] = [
     {
-      state: true,
+      state: "live",
       name: "compute1",
       runTime: "1.0 STS (Python 3.13, Node 20.18)",
       numWorkers: 3,
     },
 
     {
-      state: false,
-      name: "compute1",
+      state: "stopped",
+      name: "compute2",
+      runTime: "1.0 STS (Python 3.13, Node 20.18)",
+      numWorkers: 3,
+    },
+
+    {
+      state: "loading",
+      name: "compute3",
       runTime: "1.0 STS (Python 3.13, Node 20.18)",
       numWorkers: 3,
     },
@@ -118,14 +126,23 @@ export default function Compute() {
             {computes.map((compute) => (
               <tr key={compute.name}>
                 <td className="px-3 border-r text-foreground/80 text-sm">
-                  {compute.state ? (
+                  {compute.state === "live" && (
                     <span className="flex items-center">
                       <RxDotFilled className="text-3xl text-green-600" />
                       Running
                     </span>
-                  ) : (
+                  )}
+
+                  {compute.state === "stopped" && (
                     <span className="flex items-center">
                       <BiStop className="text-xl text-red-700 mx-1" /> Stopped
+                    </span>
+                  )}
+
+                  {compute.state === "loading" && (
+                    <span className="flex items-center">
+                      <CgSpinner className="animate-spin text ml-2 mr-1" />{" "}
+                      Preparing
                     </span>
                   )}
                 </td>
@@ -140,7 +157,7 @@ export default function Compute() {
                 </td>
 
                 <td className="px-3 text-foreground/80 text-sm">
-                  {compute.state ? (
+                  {compute.state === "live" ? (
                     <button className="px-3 hover:opacity-50">
                       <BiStop className="text-2xl" />
                     </button>
