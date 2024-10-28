@@ -36,15 +36,24 @@ print(df)`,
 # save
 df.to_csv("mycsv.csv", index=False)
 `,
-        error: "",
+        error: "Could'nt load server",
         loading: false,
-        result: "Hello world",
+        result: "",
+      },
+      {
+        content: `
+# save
+df.to_csv("mycsv.csv", index=False)
+`,
+        error: "",
+        loading: true,
+        result: "",
       },
     ],
   });
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 max-w-[1200px] m-auto">
       <h1 className="font-bold text-xl">
         {notebook.name} |{" "}
         <span className="bg-muted p-1 text-sm text-foreground/70 border">

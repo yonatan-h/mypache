@@ -1,5 +1,6 @@
 import { AiFillDelete } from "react-icons/ai";
 import { BiPlay } from "react-icons/bi";
+import { CgSpinner } from "react-icons/cg";
 import { Button } from "../../../components/ui/button";
 import { Notebook } from "../../../types/main-types";
 import { ContentEditable } from "./ContentEditable";
@@ -24,15 +25,18 @@ export default function CellComponent({
 
   return (
     <div className="  relative text-sm font-mono border-l-2 border-primary/30 pl-3">
-      <div className="flex absolute gap-2 right-3 top-3">
-        <Button variant={"ghost"} className="w-6 h-5">
-          <BiPlay />
-        </Button>
+      <div className="flex absolute gap-2 right-3 top-3 items-center">
+        {cell.loading ? (
+          <CgSpinner className="  animate-spin text ml-2 mr-1" />
+        ) : (
+          <Button variant={"ghost"} className="w-6 h-5">
+            <BiPlay />
+          </Button>
+        )}
         <Button variant={"ghost"} className="w-6 h-5">
           <AiFillDelete />
         </Button>
       </div>
-
       <ContentEditable
         onValueChange={setContent}
         className="border px-3 py-3 bg-muted min-h-[5rem] focus:outline-1 focus:outline-primary/70"
@@ -44,7 +48,10 @@ export default function CellComponent({
           </span>
         ))}
       </ContentEditable>
-      <div className="px-3 py-1">{cell.result}</div>
+      {cell.result && <div className="px-3 py-1">{cell.result}</div>}
+      {cell.error && (
+        <div className="px-3 py-1 bg-destructive/20">{cell.error}</div>
+      )}
     </div>
   );
 }
