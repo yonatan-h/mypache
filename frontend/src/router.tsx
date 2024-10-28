@@ -4,6 +4,7 @@ import Compute from "./pages/compute/Compute";
 import Data from "./pages/data/Data";
 import Home from "./pages/home/Home";
 import NewCluster from "./pages/new-cluster/NewCluster";
+import Notebook from "./pages/notebook/Notebook";
 
 export const router = createBrowserRouter([
   {
@@ -13,6 +14,11 @@ export const router = createBrowserRouter([
       {
         path: "",
         element: <Home />,
+      },
+
+      {
+        path: "notebook/:id",
+        element: <Notebook />,
       },
 
       {
