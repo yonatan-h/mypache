@@ -23,7 +23,7 @@ export default function NewCluster() {
   const [runTime, setRunTime] = useState(runTimes[0].id);
 
   return (
-    <div className="flex flex-col gap-12">
+    <div className="flex flex-col gap-6">
       <NavChain
         paths={[
           { path: "/compute", label: "Compute" },

@@ -41,7 +41,7 @@ export default function Compute() {
   ];
 
   return (
-    <div className="flex flex-col gap-12">
+    <div className="flex flex-col gap-6">
       <h1 className="font-bold text-xl">Compute</h1>
 
       <div className="flex flex-wrap gap-3 justify-between">
