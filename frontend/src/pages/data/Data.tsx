@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
+import { Button } from "../../components/ui/button";
 
 export default function Data() {
   const dataSources = ["Upload File"];
@@ -51,15 +52,11 @@ export default function Data() {
 
         <Label className="flex flex-col gap-2">
           <span className="font-bold">CSV File</span>
-          <Input
-            className="min-w-0"
-            type="file"
-            accept=".csv"
-            required
-            value={fileName}
-            onChange={(e) => setFileName(e.target.value)}
-          />
+          <Input className="min-w-0" type="file" accept=".csv" required />
         </Label>
+        <div>
+          <Button>Upload</Button>
+        </div>
       </form>
     </div>
   );

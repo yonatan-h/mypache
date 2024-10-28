@@ -1,6 +1,5 @@
 import { AiOutlineCloud, AiOutlineDatabase } from "react-icons/ai";
 import { BsBricks } from "react-icons/bs";
-import { IoMdAddCircleOutline } from "react-icons/io";
 import { Link, Outlet } from "react-router-dom";
 import { Button } from "../ui/button";
 import NavigationLink from "./NavigationLink";
@@ -24,7 +23,7 @@ export default function Layout() {
              py-2 bg-foreground border-y text-background/90
             border-background/20 flex flex-col gap-2`}
         >
-          <NavigationLink Icon={IoMdAddCircleOutline} title="New" to="/new" />
+          {/* <NavigationLink Icon={IoMdAddCircleOutline} title="New" to="/new" /> */}
           <NavigationLink Icon={AiOutlineDatabase} title="Data" to="/data" />
           <NavigationLink Icon={AiOutlineCloud} title="Compute" to="/compute" />
         </nav>
