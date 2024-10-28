@@ -3,13 +3,22 @@ import { FaShapes } from "react-icons/fa";
 import { GiNotebook } from "react-icons/gi";
 import { ImFileEmpty } from "react-icons/im";
 import { SlNotebook } from "react-icons/sl";
+import { Link } from "react-router-dom";
+import { Button } from "../../components/ui/button";
+import { Notebook } from "../../types/main-types";
 import CreateNotebookModal from "./components/CreateNotebookModal";
 import PromptCard from "./components/PromptCard";
-import { Notebook } from "../../types/main-types";
 
 export default function Home() {
   const notebooks: Notebook[] = [
-    { id: "1", name: "Notebook 1", createdAt: "2021-10-10" },
+    {
+      id: "1",
+      name: "Notebook 1",
+      createdAt: "2021-10-10",
+      clusterId: "1",
+      fileId: "1",
+      cells: [],
+    },
   ];
   return (
     <div className="flex flex-col gap-6">
@@ -59,6 +68,9 @@ export default function Home() {
                     {new Date(notebook.createdAt).toLocaleDateString()}
                   </p>
                 </div>
+                <Link to={`/notebook/${notebook.id}`}>
+                  <Button variant={"outline"}>Open</Button>
+                </Link>
               </div>
               <hr />
             </React.Fragment>

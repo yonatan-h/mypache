@@ -49,6 +49,7 @@ df.to_csv("mycsv.csv", index=False)
         loading: true,
         result: "",
       },
+      { content: "", error: "", loading: false, result: "" },
     ],
   });
 
