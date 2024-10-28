@@ -8,17 +8,12 @@ import { RxDotFilled, RxSwitch } from "react-icons/rx";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
+import { Compute } from "../../types/main-types";
 
-interface Compute {
-  state: "live" | "stopped" | "loading";
-  name: string;
-  runTime: string;
-  numWorkers: number;
-}
-
-export default function Compute() {
+export default function ComputePage() {
   const computes: Compute[] = [
     {
+      id: "1",
       state: "live",
       name: "compute1",
       runTime: "1.0 STS (Python 3.13, Node 20.18)",
@@ -26,6 +21,7 @@ export default function Compute() {
     },
 
     {
+      id: "2",
       state: "stopped",
       name: "compute2",
       runTime: "1.0 STS (Python 3.13, Node 20.18)",
@@ -33,6 +29,7 @@ export default function Compute() {
     },
 
     {
+      id: "3",
       state: "loading",
       name: "compute3",
       runTime: "1.0 STS (Python 3.13, Node 20.18)",

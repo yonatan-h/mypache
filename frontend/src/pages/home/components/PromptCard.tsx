@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { IconType } from "react-icons";
 import { Link } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
@@ -8,12 +9,14 @@ export default function PromptCard({
   description,
   to,
   toLabel,
+  toComponent,
 }: {
   Icon: IconType;
   title: string;
   description: string;
-  to: string;
-  toLabel: string;
+  to?: string;
+  toLabel?: string;
+  toComponent?: ReactNode;
 }) {
   return (
     <div className="text-sm border shadow p-3 flex flex-col gap-3">
@@ -24,9 +27,13 @@ export default function PromptCard({
         <h3 className="font-bold">{title}</h3>
       </div>
       <p className="">{description}</p>
-      <Link to={to}>
-        <Button variant="outline">{toLabel}</Button>
-      </Link>
+      {toComponent ? (
+        toComponent
+      ) : (
+        <Link to={to || ""}>
+          <Button variant="outline">{toLabel}</Button>
+        </Link>
+      )}
     </div>
   );
 }

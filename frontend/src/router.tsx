@@ -1,9 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Compute from "./pages/compute/Compute";
+import Data from "./pages/data/Data";
 import Home from "./pages/home/Home";
 import NewCluster from "./pages/new-cluster/NewCluster";
-import Data from "./pages/data/Data";
 
 export const router = createBrowserRouter([
   {
@@ -14,6 +14,7 @@ export const router = createBrowserRouter([
         path: "",
         element: <Home />,
       },
+
       {
         path: "compute",
         element: <Compute />,

@@ -3,13 +3,9 @@ import { FaShapes } from "react-icons/fa";
 import { GiNotebook } from "react-icons/gi";
 import { ImFileEmpty } from "react-icons/im";
 import { SlNotebook } from "react-icons/sl";
+import CreateNotebookModal from "./components/CreateNotebookModal";
 import PromptCard from "./components/PromptCard";
-
-interface Notebook {
-  id: string;
-  name: string;
-  createdAt: string;
-}
+import { Notebook } from "../../types/main-types";
 
 export default function Home() {
   const notebooks: Notebook[] = [
@@ -23,8 +19,7 @@ export default function Home() {
           Icon={GiNotebook}
           title="Note Book"
           description="Create a new notebook for data analysis, and machine learning."
-          to="new-notebook"
-          toLabel="Create Notebook"
+          toComponent={<CreateNotebookModal />}
         />
 
         <PromptCard
