@@ -1,15 +1,19 @@
 import { ReactNode, useEffect, useRef } from "react";
 
-const getIndex = (parent: Node, child: Node, offset: number): number => {
-  if (!parent.contains(child)) throw new Error("child is not in parent");
-  if (parent === child) {
-    return offset;
+const getIndex = (parent: Node, child: Node, offset: number): number | null => {
+  if (!parent.contains(child)) {
+    console.error("child is not in parent");
+    return null;
   }
+  if (parent === child) return offset;
 
   let index = 0;
   for (const node of parent.childNodes) {
     if (node.contains(child)) {
-      index += getIndex(node, child, offset);
+      const childIndex = getIndex(node, child, offset);
+      if (childIndex === null) return null;
+      index += childIndex;
+
       break;
     } else {
       index += node.textContent?.length || 0;
@@ -18,7 +22,10 @@ const getIndex = (parent: Node, child: Node, offset: number): number => {
   return index;
 };
 
-const getNodeAndOffset = (parent: Node, index: number): [Node, number] => {
+const getNodeAndOffset = (
+  parent: Node,
+  index: number
+): [Node, number] | null => {
   if (index === 0 || parent.childNodes.length === 0) {
     return [parent, index];
   }
@@ -31,7 +38,8 @@ const getNodeAndOffset = (parent: Node, index: number): [Node, number] => {
       return getNodeAndOffset(node, index);
     }
   }
-  throw new Error(`out of bounds, remaining offset ${index}`);
+  console.error(`out of bounds, remaining offset ${index}`);
+  return null;
 };
 
 export function ContentEditable({
@@ -44,37 +52,77 @@ export function ContentEditable({
   children: ReactNode;
 }) {
   const input = useRef<HTMLDivElement>(null);
-  const indexes = useRef<[number, number] | null>(null);
+  const index = useRef<number | null>(null);
 
-  //restore selection
   useEffect(() => {
+    restoreSelection();
+  }, [input.current?.textContent]);
+
+  const restoreSelection = () => {
     if (!input.current) return;
-    if (!indexes.current) return;
 
     const range = document.createRange();
     range.selectNodeContents(input.current);
-    range.setStart(...getNodeAndOffset(input.current, indexes.current[0]));
-    range.setEnd(...getNodeAndOffset(input.current, indexes.current[1]));
+    const res = getNodeAndOffset(input.current, index.current || 0);
+    if (!res) return;
+
+    const [node, offset] = res;
+    range.setStart(node, offset);
+    range.setEnd(node, offset);
     window.getSelection()?.removeAllRanges();
     window.getSelection()?.addRange(range);
-    console.log("here");
-  }, [input.current?.textContent]);
+    console.log("restored selection");
+  };
 
-  const onInput = (text: string) => {
-    if (input.current) {
-      //save cursor
-      const range = window.getSelection();
+  const getCursorIndex = (): number | null => {
+    if (!input.current) return null;
+    const selection = window.getSelection();
+    if (!selection?.anchorNode) return null;
 
-      if (!range?.anchorNode || !range?.focusNode) return;
+    const index = getIndex(
+      input.current,
+      selection.anchorNode,
+      selection.focusOffset
+    );
+    console.log("🚀 ~ getCursorIndex ~ index:", index);
+    return index;
+  };
 
-      indexes.current = [
-        getIndex(input.current, range.anchorNode, range.anchorOffset),
-        getIndex(input.current, range.focusNode, range.focusOffset),
-      ];
-      indexes.current.sort((a, b) => a - b);
+  const saveCursorIndex = (number?: number) => {
+    if (input.current === null) {
+      console.error("input is null");
+      return;
     }
 
-    onValueChange(text);
+    if (number) {
+      index.current = number;
+    } else {
+      index.current = getCursorIndex();
+    }
+  };
+
+  const onInput = () => {
+    saveCursorIndex();
+    onValueChange(input.current?.textContent || "");
+  };
+
+  //handle special key presses
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Tab") {
+      event.preventDefault();
+
+      const selection = window.getSelection();
+      if (!selection) return console.error("no selection");
+      const range = selection.getRangeAt(0);
+
+      const tabNode = document.createTextNode("  ");
+      range.insertNode(tabNode);
+
+      range.setStartAfter(tabNode);
+      range.setEndAfter(tabNode);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
   };
 
   return (
@@ -86,7 +134,8 @@ export function ContentEditable({
         contentEditable="plaintext-only"
         spellCheck="false"
         className={className}
-        onInput={(e) => onInput(e.currentTarget.innerText)}
+        onInput={onInput}
+        onKeyDown={onKeyDown}
       >
         {children}
       </div>
