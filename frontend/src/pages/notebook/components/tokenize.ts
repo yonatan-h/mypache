@@ -69,6 +69,8 @@ const keywords = [
   "class",
   "import",
   "from",
+  "True",
+  "False",
 ];
 export interface KeywordToken extends BaseToken {
   tt: TokenType.Keyword;
@@ -152,7 +154,7 @@ const matchers: Matcher[] = [
   //symbols, keywords
   (t) => {
     //try upto next space
-    const res = t.match(/^[^\s^\(^\^'^")]+/)?.[0];
+    const res = t.match(/^[^\s^\(^\^'^"^=)]+/)?.[0];
     if (!res) return;
 
     if (keywords.includes(res)) {

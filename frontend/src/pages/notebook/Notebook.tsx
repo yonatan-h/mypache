@@ -31,12 +31,27 @@ print(df)`,
         loading: false,
         result: "Hello world",
       },
+      {
+        content: `
+# save
+df.to_csv("mycsv.csv", index=False)
+`,
+        error: "",
+        loading: false,
+        result: "Hello world",
+      },
     ],
   });
+
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="font-bold text-xl">{notebook.name}</h1>
-      {notebook.cells.map((cell, index) => (
+      <h1 className="font-bold text-xl">
+        {notebook.name} |{" "}
+        <span className="bg-muted p-1 text-sm text-foreground/70 border">
+          python3
+        </span>
+      </h1>
+      {notebook.cells.map((_, index) => (
         <CellComponent
           key={index}
           notebook={notebook}

@@ -23,7 +23,7 @@ export default function CellComponent({
   };
 
   return (
-    <div className="  relative text-sm font-mono">
+    <div className="  relative text-sm font-mono border-l-2 border-primary/30 pl-3">
       <div className="flex absolute gap-2 right-3 top-3">
         <Button variant={"ghost"} className="w-6 h-5">
           <BiPlay />
@@ -35,7 +35,7 @@ export default function CellComponent({
 
       <ContentEditable
         onValueChange={setContent}
-        className="border px-3 py-3 bg-muted min-h-[5rem] focus:outline-1 focus:outline-primary/50"
+        className="border px-3 py-3 bg-muted min-h-[5rem] focus:outline-1 focus:outline-primary/70"
       >
         {tokenize(cell.content).map((t, i) => (
           <span key={i} className="">
