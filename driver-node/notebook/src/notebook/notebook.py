@@ -1,15 +1,15 @@
 from io import StringIO
 from contextlib import redirect_stdout
 from typing import Any, Dict
-import myspark 
+from  ..myspark import myspark
 from random import randint
 
-def random_id()->str:
+def _random_id()->str:
     return str(randint(1000, 9999))
 
 
 class Cell:
-    id:str =random_id()
+    id:str =_random_id()
     content:str
     error:str = ""
     result:str = ""
@@ -46,7 +46,7 @@ class Notebook:
         self.file_id = file_id
         self.cluster_id = cluster_id
 
-        if not id: id = random_id()
+        if not id: id = _random_id()
         self.id = id
 
         self.cells = [Cell(self.vars)]
