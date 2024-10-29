@@ -2,22 +2,31 @@ from io import StringIO
 from contextlib import redirect_stdout
 from typing import Any, Dict
 import myspark 
-import json
+from random import randint
+
+def random_id()->str:
+    return str(randint(1000, 9999))
+
 
 class Cell:
-    content:str = ""
+    id:str =random_id()
+    content:str
     error:str = ""
     result:str = ""
-    globals: Dict[str, Any]
+    vars: Dict[str, Any]
 
-    def __init__(self, globals: Dict[str, Any]):
-        self.globals = globals
+    def __init__(self, vars: Dict[str, Any]={}, id:str="", content:str="", error:str="", result:str=""):
+        self.vars = vars
+        if id: self.id = id
+        self.content = content
+        self.error = error
+        self.result = result
     
     def run(self, content:str):
         string_io = StringIO()
         with redirect_stdout(string_io):
             try:
-                exec(content, self.globals)
+                exec(content, self.vars)
             except Exception as e:
                 self.error = str(e)
         self.result = string_io.getvalue()
@@ -26,17 +35,52 @@ class Cell:
 
 class Notebook:
     id:str
+    file_id:str
+    cluster_id:str
+
     vars: Dict[str, Any] = { }
     cells:list[Cell] = []
     _original_keys: set[str]
 
-    def __init__(self, id:str):
+    def __init__(self, file_id:str, cluster_id:str, id:str=""):
+        self.file_id = file_id
+        self.cluster_id = cluster_id
+
+        if not id: id = random_id()
         self.id = id
+
         self.cells = [Cell(self.vars)]
         self._original_keys = set(globals().keys()) 
 
-    def add(self, cell:Cell):
-        self.cells.append(cell)
+    def save_cells(self, cells: list[Cell]):
+        print('here1', flush=True)
+        old_cell_map:dict[str,Cell] = {} 
+        for cell in self.cells:
+            old_cell_map[cell.id] = cell
+
+        print('here2', flush=True)
+        new_cells: list[Cell] = []
+
+        for cell in cells:
+            print('here3',cell.__dict__, flush=True)
+            if cell.id in old_cell_map:
+                print('here5', flush=True)
+                #retain errors and results
+                old_cell = old_cell_map[cell.id]
+                old_cell.content = cell.content
+                new_cells.append(old_cell)
+            else:
+                cell.vars=self.vars
+                new_cells.append(cell)
+
+        print('here4', flush=True)
+        self.cells = new_cells
+
+    def run(self, index:int):
+        if index < 0 or index >= len(self.cells):
+            raise ValueError(f"Invalid index {index}")
+        cell = self.cells[index]
+        cell.run(cell.content)
     
     def print(self):
         new_keys = set(self.vars.keys())
@@ -49,31 +93,40 @@ class Notebook:
 
 
         for i, cell in enumerate(self.cells):
-            print(f"Cell {i+1}----")
+            print(f"Cell #{i+1} - [{cell.id}]")
             print(f"Content: {cell.content}")
             print(f"Result: {cell.result}")
             print(f"Error: {cell.error}")
-    
-    def to_json(self)->str:
-        return json.dumps({
+
+    def to_dict(self)->Dict[str, Any]:
+        return {
             "id": self.id,
+            "fileId": self.file_id,
+            "clusterId": self.cluster_id,
+
             "cells": [
                 {
+                    "id": cell.id,
                     "content": cell.content,
                     "result": cell.result,
                     "error": cell.error
                 } for cell in self.cells
             ]
-        })
+        }
 
 
 myspark.say_hello()
-notebook = Notebook("abcd") 
 
-notebook.cells[0].run('''
+snippet = '''
 import myspark
 myspark.say_hello()
 x = 5
 print(f"printing {x}")
-''')
-print(notebook.to_json())
+'''
+notebook = Notebook(id="abcd", file_id="1234", cluster_id="5678") 
+notebook.save_cells([
+    Cell(content=snippet)
+])
+notebook.run(0)
+
+print(notebook.to_dict())
