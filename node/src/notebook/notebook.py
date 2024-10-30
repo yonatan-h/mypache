@@ -35,6 +35,7 @@ class Cell:
 
 class Notebook:
     id:str
+    user_id:str
     file_id:str
     cluster_id:str
 
@@ -42,7 +43,8 @@ class Notebook:
     cells:list[Cell] = []
     _original_keys: set[str]
 
-    def __init__(self, file_id:str, cluster_id:str, id:str=""):
+    def __init__(self,user_id:str, file_id:str, cluster_id:str, id:str=""):
+        self.user_id = user_id
         self.file_id = file_id
         self.cluster_id = cluster_id
 
@@ -101,6 +103,7 @@ class Notebook:
     def to_dict(self)->Dict[str, Any]:
         return {
             "id": self.id,
+            "userId":self.user_id,
             "fileId": self.file_id,
             "clusterId": self.cluster_id,
 
@@ -117,16 +120,3 @@ class Notebook:
 
 myspark.say_hello()
 
-snippet = '''
-import myspark
-myspark.say_hello()
-x = 5
-print(f"printing {x}")
-'''
-notebook = Notebook(id="abcd", file_id="1234", cluster_id="5678") 
-notebook.save_cells([
-    Cell(content=snippet)
-])
-notebook.run(0)
-
-print(notebook.to_dict())

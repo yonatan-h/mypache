@@ -1,10 +1,16 @@
+import { blockNoAuth, useGetMe } from "@/services/user";
 import { AiOutlineCloud, AiOutlineDatabase } from "react-icons/ai";
 import { BsBricks } from "react-icons/bs";
 import { Link, Outlet } from "react-router-dom";
+import Loading from "../state/Loading";
 import { Button } from "../ui/button";
 import NavigationLink from "./NavigationLink";
 
 export default function Layout() {
+  blockNoAuth();
+  const meQ = useGetMe();
+  console.log("🚀 ~ Layout ~ meQ:", meQ);
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="px-6 bg-foreground text-background flex justify-between items-center p-2">
@@ -15,7 +21,10 @@ export default function Layout() {
           <BsBricks />
           mybricks
         </Link>
-        <Button className="bg-background/20 rounded-full w-8 h-8">Y</Button>
+        <Button className="bg-background/20 rounded-full w-8 h-8">
+          <Loading isLoading={meQ.isLoading} />
+          {meQ.data && meQ.data.id[0]}
+        </Button>
       </div>
       <div className="flex-1 flex ">
         <nav

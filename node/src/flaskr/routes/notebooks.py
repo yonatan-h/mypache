@@ -1,40 +1,28 @@
-from flask import Flask, request
+from flask import Blueprint, request
+from flaskr.db import db
 from notebook import Notebook, Cell
-app = Flask(__name__)
+from flaskr.middlewares import get_user
 
-#small db
-#Todo: remove existing id
-notebooks:list[Notebook] = [
-    Notebook(file_id="file1", cluster_id="cluster1",id="1"),
-]
-def find_notebook(id:str)->Notebook|None:
-    for notebook in notebooks:
-        if notebook.id == id:
-            return notebook
-    return None
+bp = Blueprint('notebooks', __name__, url_prefix='/notebooks')
 
-
-@app.get("/")
-def say_hello():
-    return "Hello World!"
-
-@app.get('/notebooks')
+@bp.get('/')
 def get_notebooks():
+    user = get_user()
     return {
-        "notebooks": [notebook.to_dict() for notebook in notebooks]
+        "notebooks": [n.to_dict() for n in db.get_notebooks(user_id=user.id)]
     }
 
-@app.get('/notebooks/<id>')
+@bp.get('/<id>')
 def get_notebook(id:str):
-    notebook = find_notebook(id)
+    notebook = db.find_notebook(id)
     if not notebook:
         return ({"error": "Notebook not found"}, 404)
     return { "notebook": notebook.to_dict() }
 
-@app.put('/notebooks/<id>/run/<index>')
+@bp.put('/<id>/run/<index>')
 def run_cell(id:str, index:str):
     print('before2--', flush=True)
-    notebook = find_notebook(id)
+    notebook = db.find_notebook(id)
     if not notebook:
         return ({"error": "Notebook not found"}, 404)
 
@@ -61,20 +49,20 @@ def run_cell(id:str, index:str):
 
     return { "notebook": notebook.to_dict() }
 
-@app.post('/notebooks')
+@bp.post('/')
 def create_notebook():
     request_data = request.get_json() #{fileId:str, clusterId:str}
-    notebook =Notebook(file_id=request_data.get("fileId"), cluster_id=request_data.get("clusterId"))
+    notebook =Notebook(user_id="1", file_id=request_data.get("fileId"), cluster_id=request_data.get("clusterId"))
     #Todo: remove hard coded id
-    notebooks.append(notebook)
+    db.add_notebook(notebook)
     return { "notebook": notebook.to_dict() }
 
-@app.delete('/notebooks/<id>')
+@bp.delete('/<id>')
 def delete_notebook(id:str):
-    notebook = find_notebook(id)
+    notebook = db.find_notebook(id)
     if not notebook:
         return ({"error": "Notebook not found"}, 404)
-    notebooks.remove(notebook)
+    db.remove_notebook(notebook.id)
     return { "notebook": notebook.to_dict() }
 
 

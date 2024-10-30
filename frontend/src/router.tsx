@@ -3,12 +3,13 @@ import Layout from "./components/layout/Layout";
 import Compute from "./pages/compute/Compute";
 import Data from "./pages/data/Data";
 import Home from "./pages/home/Home";
+import Login from "./pages/login/Login";
 import NewCluster from "./pages/new-cluster/NewCluster";
 import Notebook from "./pages/notebook/Notebook";
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/app",
     element: <Layout />,
     children: [
       {
@@ -36,5 +37,9 @@ export const router = createBrowserRouter([
         element: <Data />,
       },
     ],
+  },
+  {
+    path: "/",
+    element: <Login />,
   },
 ]);
