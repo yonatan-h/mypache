@@ -5,6 +5,7 @@ import CellComponent from "./components/Cell";
 
 export default function NotebookPage() {
   const { id } = useParams();
+  console.log("🚀 ~ NotebookPage ~ id:", id);
   const [notebook, setNotebook] = useState<Notebook>({
     id: "1",
     clusterId: "1",
