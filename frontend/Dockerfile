@@ -1,3 +1,9 @@
-FROM nginx:1.27.2-bookworm
-RUN echo "hello" > /tmp.txt
-COPY ./frontend /usr/share/nginx/html
+FROM node:23-bookworm
+
+WORKDIR /app
+COPY ./package.json /app/package.json
+COPY ./package-lock.json /app/package-lock.json
+RUN npm install
+
+EXPOSE 5173
+CMD [ "npm", "run", "dev" ]
