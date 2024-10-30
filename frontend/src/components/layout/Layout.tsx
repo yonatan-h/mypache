@@ -15,7 +15,7 @@ export default function Layout() {
     <div className="flex flex-col min-h-screen">
       <div className="px-6 bg-foreground text-background flex justify-between items-center p-2">
         <Link
-          to="/"
+          to="/app"
           className="flex items-center gap-3 text font-bold text-background/90 "
         >
           <BsBricks />
@@ -33,8 +33,16 @@ export default function Layout() {
             border-background/20 flex flex-col gap-2`}
         >
           {/* <NavigationLink Icon={IoMdAddCircleOutline} title="New" to="/new" /> */}
-          <NavigationLink Icon={AiOutlineDatabase} title="Data" to="/data" />
-          <NavigationLink Icon={AiOutlineCloud} title="Compute" to="/compute" />
+          <NavigationLink
+            Icon={AiOutlineDatabase}
+            title="Data"
+            to="/app/data"
+          />
+          <NavigationLink
+            Icon={AiOutlineCloud}
+            title="Compute"
+            to="/app/compute"
+          />
         </nav>
         <main className="flex-1 p-6">
           <Outlet />

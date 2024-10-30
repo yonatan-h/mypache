@@ -51,7 +51,7 @@ export default function ComputePage() {
           />
         </div>
 
-        <Link to="/compute/new-cluster">
+        <Link to="/app/compute/new-cluster">
           <Button>Create Compute</Button>
         </Link>
       </div>
@@ -111,7 +111,7 @@ export default function ComputePage() {
                       </p>
                     </div>
 
-                    <Link to="/compute/new-cluster">
+                    <Link to="/app/compute/new-cluster">
                       <Button variant={"outline"} className="shadow">
                         Create Compute
                       </Button>

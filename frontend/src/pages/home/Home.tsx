@@ -35,7 +35,7 @@ export default function Home() {
           Icon={FaShapes}
           title="Import Data"
           description="Create a table by uploading local files"
-          to="/data"
+          to="/app/data"
           toLabel="Create Table"
         />
 
@@ -43,7 +43,7 @@ export default function Home() {
           Icon={FaShapes}
           title="Create Compute"
           description="Create a cluster of worker nodes to run a notebook on."
-          to="/compute/new-cluster"
+          to="/app/compute/new-cluster"
           toLabel="Create Compute"
         />
       </div>

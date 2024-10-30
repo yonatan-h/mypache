@@ -69,7 +69,7 @@ export default function CreateNotebookModal() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            navigate("/notebook/5");
+            navigate("/app/notebook/5");
           }}
           className="flex flex-col gap-3"
         >

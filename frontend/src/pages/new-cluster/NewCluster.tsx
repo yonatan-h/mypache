@@ -26,8 +26,8 @@ export default function NewCluster() {
     <div className="flex flex-col gap-6">
       <NavChain
         paths={[
-          { path: "/compute", label: "Compute" },
-          { path: "/compute/new-cluster", label: "New Cluster" },
+          { path: "/app/compute", label: "Compute" },
+          { path: "/app/compute/new-cluster", label: "New Cluster" },
         ]}
       />
 
@@ -77,7 +77,7 @@ export default function NewCluster() {
         <hr />
         <div className="flex flex-wrap gap-3">
           <Button>Create Compute</Button>
-          <Link to="/compute">
+          <Link to="/app/compute">
             <Button variant={"outline"} type="button">
               Cancel
             </Button>
