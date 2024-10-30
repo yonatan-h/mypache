@@ -1,7 +1,7 @@
 from io import StringIO
 from contextlib import redirect_stdout
 from typing import Any, Dict
-from  ..myspark import myspark
+import myspark
 from random import randint
 
 def _random_id()->str:
