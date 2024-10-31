@@ -1,3 +1,5 @@
+import Loading from "@/components/state/Loading";
+import { useGetRuntimes, useGetWorkersRatio } from "@/services/compute";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import NavChain from "../../components/layout/NavChain";
@@ -14,13 +16,10 @@ import {
 
 export default function NewCluster() {
   const [computeName, setComputeName] = useState("MyCompute");
-  const runTimes = [
-    {
-      id: "rn1",
-      label: "1.0 STS (Python 3.13, Node 20.18)",
-    },
-  ];
-  const [runTime, setRunTime] = useState(runTimes[0].id);
+  const [runTime, setRunTime] = useState<string>("");
+
+  const runtimesQ = useGetRuntimes();
+  const workersRatioQ = useGetWorkersRatio();
 
   return (
     <div className="flex flex-col gap-6">
@@ -55,14 +54,18 @@ export default function NewCluster() {
           <span className="font-bold">Mybricks runtime version</span>
           <Select value={runTime} onValueChange={setRunTime}>
             <SelectTrigger className="">
-              <SelectValue placeholder="Theme" />
+              <div>
+                {<Loading isLoading={runtimesQ.isLoading} />}
+                {runtimesQ.data && <SelectValue placeholder="Select runtime" />}
+              </div>
             </SelectTrigger>
             <SelectContent>
-              {runTimes.map(({ id, label }) => (
-                <SelectItem key={id} value={id}>
-                  {label}
-                </SelectItem>
-              ))}
+              {runtimesQ.data &&
+                runtimesQ.data.map((r) => (
+                  <SelectItem key={r.id} value={r.id}>
+                    {r.name} ({r.lang})
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </Label>
@@ -70,8 +73,9 @@ export default function NewCluster() {
         <div className="text-sm flex flex-col gap-2">
           <span className="font-bold">Instance</span>
           <p className="rounded shadow border p-3">
-            Three workers per cluster. Your compute will automatically terminate
-            after an idle period of one hour.
+            <Loading isLoading={workersRatioQ.isLoading} /> workers per cluster.
+            Your compute will automatically terminate after an idle period of
+            one hour.
           </p>
         </div>
         <hr />

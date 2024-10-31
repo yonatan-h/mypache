@@ -18,3 +18,21 @@ def register():
     db.add_worker(worker)
     return {"worker":worker.to_dict()}
 
+@bp.get('/runtimes')
+def worker_types():
+    #Todo: allow workers to give this info on registration
+    return {"runtimes":[
+        {
+            "id":"1sts",
+            "name": "1.0 LTS",
+            "lang": "Python 3.14",
+        }
+        ]}
+
+@bp.get('/ratio')
+def get_workers():
+    busy_workers, idle_workers = db.get_busy_and_idle_workers()
+    return {
+        "busy": len(busy_workers),
+        "idle": len(idle_workers)
+    }

@@ -1,2 +1,5 @@
+from flaskr.models.worker import Worker
+
 class Cluster:
-    urls:list[str] = []
+    id:str
+    workers: list[Worker] = []

@@ -2,6 +2,7 @@ from notebook import Notebook
 from flaskr.models.user import User
 from flaskr.models.file import File
 from flaskr.models.worker import Worker
+from flaskr.models.cluster import Cluster
 
 
 
@@ -12,6 +13,7 @@ class DB:
     _users: list[User] = [User(id="1")]
     _files: list[File] = [File(id="1",filename="file1")]
     _workers: list[Worker] = []
+    _clusters: list[Cluster] = []
 
     def get_notebooks(self, user_id:str="")->list[Notebook]:
         if user_id: 
@@ -55,6 +57,25 @@ class DB:
         if worker.address in [w.address for w in self._workers]:
             raise Exception(f"Worker with ip {worker.address} already exists")
         self._workers.append(worker)
+
+    def get_busy_and_idle_workers(self)->tuple[list[Worker],list[Worker]]:
+        busies:list[Worker] = []
+        idles:list[Worker] = []
+
+        for worker in self._workers:
+            in_cluster = False
+            #Todo: decrease time complexity
+            for cluster in self._clusters:
+                if worker in cluster.workers:
+                    in_cluster = True
+                    break
+            if in_cluster:
+                busies.append(worker)
+            else:
+                idles.append(worker)
+
+        return (busies, idles)
+
 
 db = DB()
 
