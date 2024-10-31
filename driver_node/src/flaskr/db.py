@@ -1,6 +1,7 @@
 from notebook import Notebook
 from flaskr.models.user import User
 from flaskr.models.file import File
+from flaskr.models.worker import Worker
 
 
 
@@ -10,6 +11,7 @@ class DB:
     ]
     _users: list[User] = [User(id="1")]
     _files: list[File] = [File(id="1",filename="file1")]
+    _workers: list[Worker] = []
 
     def get_notebooks(self, user_id:str="")->list[Notebook]:
         if user_id: 
@@ -48,6 +50,11 @@ class DB:
     
     def add_user(self, user:User):
         self._users.append(user)
+    
+    def add_worker(self, worker:Worker):
+        if worker.address in [w.address for w in self._workers]:
+            raise Exception(f"Worker with ip {worker.address} already exists")
+        self._workers.append(worker)
 
 db = DB()
 

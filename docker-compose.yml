@@ -1,11 +1,44 @@
 services:
   driver-service:
-    build: ./node
+    build: ./driver_node
     volumes:
-      - ./node:/app
+      - ./driver_node:/app
       - /app/venv
     ports:
       - 5000:5000
+
+  worker-service1:
+    build: ./worker_node
+    volumes:
+      - ./worker_node:/app
+      - /app/venv
+    ports:
+      - 5001:5001
+    environment:
+      - NAME=Worker_One
+      - ADDR=http://worker-service1:5001
+    depends_on:
+      - driver-service
+
+  # worker-service2:
+  #   build: ./worker_node
+  #   volumes:
+  #     - ./worker_node:/app
+  #     - /app/venv
+  #   ports:
+  #     - 5002:5001
+  #   environment:
+  #     - NAME=w_two
+
+  # worker-service3:
+  #   build: ./worker_node
+  #   volumes:
+  #     - ./worker_node:/app
+  #     - /app/venv
+  #   ports:
+  #     - 5003:5001
+  #   environment:
+  #     - NAME=w_three
 
   frontend-service:
     build: ./frontend
