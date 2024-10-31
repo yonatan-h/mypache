@@ -1,7 +1,12 @@
 import Loading from "@/components/state/Loading";
-import { useGetRuntimes, useGetWorkersRatio } from "@/services/compute";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  useCreateCluster,
+  useGetRuntimes,
+  useGetWorkersRatio,
+} from "@/services/compute";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import NavChain from "../../components/layout/NavChain";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -15,11 +20,14 @@ import {
 } from "../../components/ui/select";
 
 export default function NewCluster() {
-  const [computeName, setComputeName] = useState("MyCompute");
-  const [runTime, setRunTime] = useState<string>("");
+  const [name, setName] = useState("MyCompute");
+  const [runtimeId, setRuntimeId] = useState<string>("");
+  const [workers, setWorkers] = useState(0);
 
   const runtimesQ = useGetRuntimes();
-  const workersRatioQ = useGetWorkersRatio();
+  const ratioQ = useGetWorkersRatio();
+  const createQ = useCreateCluster();
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col gap-6">
@@ -38,6 +46,10 @@ export default function NewCluster() {
         className="flex flex-col gap-6 max-w-[800px]"
         onSubmit={(e) => {
           e.preventDefault();
+          createQ.mutate(
+            { name, runtimeId, workers },
+            { onSuccess: () => navigate("/app/compute") }
+          );
         }}
       >
         <Label className="flex flex-col gap-2">
@@ -45,14 +57,14 @@ export default function NewCluster() {
           <Input
             className="min-w-0"
             required
-            value={computeName}
-            onChange={(e) => setComputeName(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           ></Input>
         </Label>
 
         <Label className="flex flex-col gap-2">
           <span className="font-bold">Mybricks runtime version</span>
-          <Select value={runTime} onValueChange={setRunTime}>
+          <Select value={runtimeId} onValueChange={setRuntimeId}>
             <SelectTrigger className="">
               <div>
                 {<Loading isLoading={runtimesQ.isLoading} />}
@@ -72,15 +84,33 @@ export default function NewCluster() {
 
         <div className="text-sm flex flex-col gap-2">
           <span className="font-bold">Instance</span>
-          <p className="rounded shadow border p-3">
-            <Loading isLoading={workersRatioQ.isLoading} /> workers per cluster.
-            Your compute will automatically terminate after an idle period of
-            one hour.
+
+          <p className="text-sm">
+            <Loading isLoading={ratioQ.isLoading} />
+            {ratioQ.data?.idle}/
+            {(ratioQ.data?.idle || 0) + (ratioQ.data?.busy || 0)} workers
+            available. Choose number of workers for this cluster.
           </p>
+          <RadioGroup
+            required
+            value={workers.toString() || ""}
+            onValueChange={(v) => setWorkers(+v)}
+          >
+            {Array.from({ length: ratioQ.data?.idle || 0 }).map((_, i) => (
+              <div className="flex items-center space-x-2" key={i}>
+                <RadioGroupItem
+                  value={(i + 1).toString()}
+                  id={`workers-${i}`}
+                />
+                <Label htmlFor={`workers-${i}`}>{i + 1}</Label>
+              </div>
+            ))}
+          </RadioGroup>
         </div>
+
         <hr />
         <div className="flex flex-wrap gap-3">
-          <Button>Create Compute</Button>
+          <Button isLoading={createQ.isLoading}>Create Compute</Button>
           <Link to="/app/compute">
             <Button variant={"outline"} type="button">
               Cancel

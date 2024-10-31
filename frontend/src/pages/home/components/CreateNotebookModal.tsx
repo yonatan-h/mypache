@@ -14,10 +14,10 @@ import {
 } from "../../../components/ui/dialog";
 import { Label } from "../../../components/ui/label";
 import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group";
-import { Compute, File } from "../../../types/main-types";
+import { Cluster, File } from "../../../types/main-types";
 
 export default function CreateNotebookModal() {
-  const computes: Compute[] = [
+  const computes: Cluster[] = [
     {
       id: "1",
       state: "live",

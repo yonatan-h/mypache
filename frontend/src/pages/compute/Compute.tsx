@@ -8,10 +8,10 @@ import { RxDotFilled, RxSwitch } from "react-icons/rx";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
-import { Compute } from "../../types/main-types";
+import { Cluster } from "../../types/main-types";
 
 export default function ComputePage() {
-  const computes: Compute[] = [
+  const computes: Cluster[] = [
     {
       id: "1",
       state: "live",

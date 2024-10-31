@@ -15,19 +15,14 @@ def register():
         raise Exception("No address provided")
 
     worker = Worker(address=address)
-    db.add_worker(worker)
+    try:
+        db.add_worker(worker)
+    except Exception as e:
+        return {"error":str(e)},400
+
     return {"worker":worker.to_dict()}
 
-@bp.get('/runtimes')
-def worker_types():
-    #Todo: allow workers to give this info on registration
-    return {"runtimes":[
-        {
-            "id":"1sts",
-            "name": "1.0 LTS",
-            "lang": "Python 3.14",
-        }
-        ]}
+
 
 @bp.get('/ratio')
 def get_workers():

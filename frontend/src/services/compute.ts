@@ -1,8 +1,8 @@
 import { apiClient } from "@/lib/axios";
 import { errorToast } from "@/lib/error-toast";
-import { Runtime } from "@/types/compute";
+import { CreateCluster, Runtime } from "@/types/compute";
 import { AxiosError } from "axios";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 const WORKERS = "workers";
 
@@ -11,7 +11,7 @@ export function useGetRuntimes() {
     queryKey: [WORKERS, "runtimes"],
     queryFn: async () => {
       const response = await apiClient.get<{ runtimes: Runtime[] }>(
-        "/workers/runtimes"
+        "/clusters/runtimes"
       );
 
       return response.data.runtimes;
@@ -31,5 +31,18 @@ export function useGetWorkersRatio() {
       return response.data;
     },
     onError: errorToast,
+  });
+}
+
+export function useCreateCluster() {
+  const client = useQueryClient();
+  return useMutation<void, AxiosError, CreateCluster>({
+    mutationFn: async ({ name, runtimeId, workers }) => {
+      await apiClient.post("/clusters", { name, runtimeId, workers });
+    },
+    onError: errorToast,
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: [WORKERS, "ratio"] });
+    },
   });
 }
