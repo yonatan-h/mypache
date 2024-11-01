@@ -2,10 +2,10 @@ import { AiFillDelete } from "react-icons/ai";
 import { BiPlay } from "react-icons/bi";
 import { CgSpinner } from "react-icons/cg";
 import { Button } from "../../../components/ui/button";
-import { Notebook } from "../../../types/main-types";
 import { ContentEditable } from "./ContentEditable";
 import { tokenize } from "./tokenize";
 import TokenSpan from "./TokenSpan";
+import { Notebook } from "@/types/notebook";
 
 export default function CellComponent({
   notebook,
