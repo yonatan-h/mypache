@@ -47,7 +47,9 @@ export function useCreateCluster() {
   });
 }
 
-export function useGetClusters() {
+export function useGetClusters(
+  { refresh }: { refresh: boolean } = { refresh: false }
+) {
   return useQuery<Cluster[], AxiosError>({
     queryKey: [CLUSTERS, "all"],
     queryFn: async () => {
@@ -58,6 +60,7 @@ export function useGetClusters() {
       return [...response.data.clusters].reverse();
     },
     onError: errorToast,
+    refetchInterval: refresh ? 1000 : undefined,
   });
 }
 

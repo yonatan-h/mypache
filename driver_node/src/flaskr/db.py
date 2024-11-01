@@ -56,6 +56,12 @@ class DB:
     def add_user(self, user:User):
         self._users.append(user)
     
+    def has_worker(self, address:str)->bool:
+        for worker in self._workers:
+            if worker.address == address:
+                return True
+        return False
+
     def add_worker(self, worker:Worker):
         if worker.address in [w.address for w in self._workers]:
             raise Exception(f"Worker with ip {worker.address} already exists")

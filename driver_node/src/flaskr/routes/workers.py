@@ -16,15 +16,17 @@ def register():
 
     worker = Worker(address=address)
     try:
-        db.add_worker(worker)
+        if db.has_worker(address):
+            return {"message":"Worker already registered"},200
 
+        db.add_worker(worker)
         #Todo: remove automatic cluster creation after experimentaion
         clusters = db.get_clusters()
         if len(clusters) == 0:
             db.create_cluster(name="default", user_id="1", num_workers=1, runtime_id=db.get_cluster_runtimes()[0].id)
 
     except Exception as e:
-        return {"error":str(e)},400
+        return {"error":str(e)},409
 
     return {"worker":worker.to_dict()}
 

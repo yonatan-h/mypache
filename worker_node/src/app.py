@@ -14,8 +14,9 @@ def tell_driver(my_addr:str):
             })
             data = res.text
             print(data, flush=True)
-        except Exception as e:
-            print(f"Error: {e}", flush=True)
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to tell driver: {e}", flush=True)
+            
         sleep(2)
 
 
@@ -26,8 +27,7 @@ if __name__ == '__main__':
     def hello():
         return 'Hello from worker node!'
 
-    Thread(target=tell_driver, args=(environ['ADDR']), daemon=True).start()
-    tell_driver(environ['ADDR'])
+    Thread(target=tell_driver, args=(environ['ADDR'],), daemon=True).start()
     app.run(host='0.0.0.0', debug=True, port=5001)
     print(f"Worker #{environ['NAME']} is running")
 
