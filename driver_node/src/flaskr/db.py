@@ -19,7 +19,7 @@ class DB:
 
     def get_notebooks(self, user_id:str="")->list[Notebook]:
         if user_id: 
-            return [n for n in self._notebooks if n.user_id == user_id]
+            return [n for n in self._notebooks if n.user.id == user_id]
         return self._notebooks
 
     def add_notebook(self, notebook:Notebook):
@@ -36,7 +36,7 @@ class DB:
     def find_notebook(self,id:str, user_id:str)->Notebook|None:
         for notebook in self._notebooks:
             if notebook.id == id:
-                if notebook.user_id != user_id:
+                if notebook.user.id != user_id:
                     raise Exception("Notebook not owned by user")
                 return notebook
         return None

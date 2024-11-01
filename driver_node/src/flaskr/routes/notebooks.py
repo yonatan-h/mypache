@@ -26,6 +26,7 @@ def get_notebook(id:str):
     notebook = db.find_notebook(user_id=user.id, id=id)
     if not notebook:
         return ({"error": "Notebook not found"}, 404)
+
     return { "notebook": notebook.to_dict() }
 
 @bp.put('/<id>/run/<index>')

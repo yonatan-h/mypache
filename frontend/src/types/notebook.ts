@@ -2,11 +2,17 @@ import { Cluster } from "./compute";
 import { SparkFile } from "./data";
 import { User } from "./user";
 
-export interface Notebook {
+export interface CreateNotebook {
+  fileId: string;
+  clusterId: string;
+}
+
+export interface RetrievedNotebook {
   id: string;
   user: User;
   cluster: Cluster;
   file: SparkFile;
+  cells: RetrievedCell[];
 }
 
 export interface RetrievedCell {
@@ -16,11 +22,16 @@ export interface RetrievedCell {
   result: string;
 }
 
-export interface Cell extends RetrievedCell {
-  loading: boolean;
+//
+
+export interface Notebook {
+  id: string;
+  user: User;
+  cluster: Cluster;
+  file: SparkFile;
+  cells: Cell[];
 }
 
-export interface CreateNotebook {
-  fileId: string;
-  clusterId: string;
+export interface Cell extends RetrievedCell {
+  loading: boolean;
 }

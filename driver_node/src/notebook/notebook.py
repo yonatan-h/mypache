@@ -36,7 +36,6 @@ class Cell:
 
 class Notebook:
     id:str
-    user_id:str
     file:flaskr.File
     cluster:flaskr.Cluster
     user:flaskr.User
@@ -54,7 +53,10 @@ class Notebook:
         if not id: id = _random_id()
         self.id = id
 
-        self.cells = [Cell(self.vars)]
+        self.cells = [Cell(self.vars, content="""\
+# Do anything
+print("Hello World")
+""")]
         self._original_keys = set(globals().keys()) 
 
     def save_cells(self, cells: list[Cell]):
