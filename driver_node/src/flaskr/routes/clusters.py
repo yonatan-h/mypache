@@ -47,4 +47,19 @@ def create_cluster():
         name=name, user_id=user.id, num_workers=workers, runtime_id=runtime_id
     )
     return cluster.to_dict()
+
+@bp.delete('/<cluster_id>') 
+def stop_cluster(cluster_id:str):
+    try:    
+        user = get_user()
+    except Exception as e:
+        return {"error":str(e)},402
+
+    try:
+        cluster = db.get_cluster(cluster_id=cluster_id,user_id=user.id)
+    except Exception as e:
+        return {"error":str(e)},400
+
+    cluster.stop()
     
+    return {"cluster":cluster.to_dict()}

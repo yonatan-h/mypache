@@ -108,6 +108,14 @@ class DB:
     def get_clusters(self, user_id:str)->list[Cluster]:
         return [c for c in self._clusters if c.user_id == user_id]
 
+    def get_cluster(self, cluster_id:str, user_id:str)->Cluster:
+        for cluster in self._clusters:
+            if cluster.id == cluster_id:
+                if cluster.user_id != user_id:
+                    raise Exception("Cluster not owned by user")
+                return cluster
+        raise Exception(f"Cluster with id {cluster_id} not found")
+
 
 db = DB()
 

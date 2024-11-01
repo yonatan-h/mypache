@@ -41,6 +41,10 @@ class Cluster:
         self.state = ClusterStatus.Live
         self.runtime = runtime
     
+    def stop(self):
+        self.state = ClusterStatus.STOPPED
+        self.workers = []
+    
     def to_dict(self) -> Dict[str, Any] :
         return {
             "id":self.id,
