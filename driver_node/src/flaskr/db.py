@@ -105,7 +105,9 @@ class DB:
         self._clusters.append(cluster)
         return cluster
     
-    def get_clusters(self, user_id:str)->list[Cluster]:
+    def get_clusters(self, user_id:str="")->list[Cluster]:
+        if not user_id:
+            return self._clusters
         return [c for c in self._clusters if c.user_id == user_id]
 
     def get_cluster(self, cluster_id:str, user_id:str)->Cluster:
