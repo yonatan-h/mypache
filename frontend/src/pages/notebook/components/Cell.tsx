@@ -1,3 +1,4 @@
+import { Notebook } from "@/types/notebook";
 import { AiFillDelete } from "react-icons/ai";
 import { BiPlay } from "react-icons/bi";
 import { CgSpinner } from "react-icons/cg";
@@ -5,16 +6,17 @@ import { Button } from "../../../components/ui/button";
 import { ContentEditable } from "./ContentEditable";
 import { tokenize } from "./tokenize";
 import TokenSpan from "./TokenSpan";
-import { Notebook } from "@/types/notebook";
 
 export default function CellComponent({
   notebook,
   setNotebook,
   cellIndex,
+  runCell,
 }: {
   setNotebook: (n: Notebook) => void;
   notebook: Notebook;
   cellIndex: number;
+  runCell: (i: number) => void;
 }) {
   const cell = notebook.cells[cellIndex];
   const setContent = (content: string) => {
@@ -29,7 +31,11 @@ export default function CellComponent({
         {cell.loading ? (
           <CgSpinner className="  animate-spin text ml-2 mr-1" />
         ) : (
-          <Button variant={"ghost"} className="w-6 h-5">
+          <Button
+            onClick={() => runCell(cellIndex)}
+            variant={"ghost"}
+            className="w-6 h-5"
+          >
             <BiPlay />
           </Button>
         )}
@@ -48,9 +54,13 @@ export default function CellComponent({
           </span>
         ))}
       </ContentEditable>
-      {cell.result && <div className="px-3 py-1">{cell.result}</div>}
+      {cell.result && (
+        <p className="px-3 py-1 whitespace-break-spaces ">{cell.result}</p>
+      )}
       {cell.error && (
-        <div className="px-3 py-1 bg-destructive/20">{cell.error}</div>
+        <p className="px-3 py-1 bg-destructive/20 whitespace-break-spaces">
+          {cell.error}
+        </p>
       )}
     </div>
   );

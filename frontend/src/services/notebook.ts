@@ -1,6 +1,11 @@
 import { apiClient } from "@/lib/axios";
 import { errorToast } from "@/lib/error-toast";
-import { CreateNotebook, Notebook, RetrievedNotebook } from "@/types/notebook";
+import {
+  CreateNotebook,
+  Notebook,
+  RetrievedCell,
+  RetrievedNotebook,
+} from "@/types/notebook";
 import { AxiosError } from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
@@ -33,5 +38,22 @@ export function useGetNotebook(id: string) {
       return res.data.notebook;
     },
     onError: errorToast,
+  });
+}
+
+export function useRunNotebook() {
+  const client = useQueryClient();
+  return useMutation<
+    void,
+    AxiosError,
+    { id: string; cells: RetrievedCell[]; index: number }
+  >({
+    mutationFn: async ({ id, cells, index }) => {
+      await apiClient.put(`/notebooks/${id}/run/${index}`, { cells });
+    },
+    onError: errorToast,
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: [NOTEBOOKS] });
+    },
   });
 }

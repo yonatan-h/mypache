@@ -25,6 +25,7 @@ export interface RetrievedCell {
 //
 
 export interface Notebook {
+  numRuns: number;
   id: string;
   user: User;
   cluster: Cluster;
