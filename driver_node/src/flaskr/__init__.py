@@ -1,12 +1,18 @@
 from flask import Flask
+
+from flaskr.models.cluster import Cluster
+from flaskr.models.file import File
+from flaskr.models.user import User
+##
+
 from flaskr.routes.notebooks import bp as notebooks_bp
 from flaskr.routes.user import bp as users_bp
 from flaskr.routes.workers import bp as workers_bp
 from flaskr.routes.clusters import bp as clusters_bp
 from flaskr.routes.files import bp  as files_bp
-
 from flask_cors import CORS
 
+__all__ = ["File", "Cluster", "User"]
 
 def create_app():
     app = Flask(__name__)

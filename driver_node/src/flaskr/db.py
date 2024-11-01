@@ -25,17 +25,19 @@ class DB:
     def add_notebook(self, notebook:Notebook):
         self._notebooks.append(notebook)
 
-    def remove_notebook(self, id:str):
-        notebook = self.find_notebook(id)
+    def remove_notebook(self, id:str, user_id:str):
+        notebook = self.find_notebook(id=id, user_id=user_id)
         if notebook:
             self._notebooks.remove(notebook)
         else:
             raise ValueError(f"Notebook with id {id} not found")
         
     
-    def find_notebook(self,id:str)->Notebook|None:
+    def find_notebook(self,id:str, user_id:str)->Notebook|None:
         for notebook in self._notebooks:
             if notebook.id == id:
+                if notebook.user_id != user_id:
+                    raise Exception("Notebook not owned by user")
                 return notebook
         return None
     
@@ -136,6 +138,17 @@ class DB:
                 files.append(file)
 
         return files
+    
+ 
+
+    def get_file(self, file_id:str, user_id:str)->File:
+        for file in self._files:
+            if file.id == file_id:
+                if file.user_id != user_id:
+                    raise Exception("File not owned by user")
+                return file
+
+        raise Exception(f"File with id {file_id} not found")
 
 
 db = DB()

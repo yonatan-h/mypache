@@ -1,6 +1,7 @@
 import Loading from "@/components/state/Loading";
 import { useGetClusters } from "@/services/compute";
 import { useGetSparkFiles } from "@/services/data";
+import { useCreateNotebook } from "@/services/notebook";
 import { useState } from "react";
 import { AiFillFileText } from "react-icons/ai";
 import { BiStop } from "react-icons/bi";
@@ -24,8 +25,9 @@ export default function CreateNotebookModal() {
   const [open, setOpen] = useState(false);
   const clusterQ = useGetClusters();
   const filesQ = useGetSparkFiles();
+  const createQ = useCreateNotebook();
 
-  const [computeId, setComputeId] = useState("");
+  const [clusterId, setClusterId] = useState("");
   const [fileId, setFileId] = useState("");
   const navigate = useNavigate();
 
@@ -33,7 +35,7 @@ export default function CreateNotebookModal() {
     <Dialog
       open={open}
       onOpenChange={(v) => {
-        setComputeId("");
+        setClusterId("");
         setFileId("");
         setOpen(v);
       }}
@@ -53,14 +55,17 @@ export default function CreateNotebookModal() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            navigate("/app/notebook/5");
+            createQ.mutate(
+              { clusterId: clusterId, fileId },
+              { onSuccess: (n) => navigate(`/app/notebooks/${n.id}`) }
+            );
           }}
           className="flex flex-col gap-3"
         >
           <hr />
           <RadioGroup
-            value={computeId}
-            onValueChange={(v) => setComputeId(v)}
+            value={clusterId}
+            onValueChange={(v) => setClusterId(v)}
             required
           >
             <Loading isLoading={clusterQ.isLoading} />

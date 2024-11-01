@@ -24,7 +24,7 @@ export default function NavigationLink({
           <div
             className={`w-1 h-full bg-red-500 ${isActive ? "" : "opacity-0"}`}
           ></div>
-          <div className="flex-1 rounded flex gap-2 items-center px-2 py-1">
+          <div className="flex-1 rounded flex gap-2 items-center px-2 py-1 ">
             <Icon className="text-xl" />
             <span>{title}</span>
           </div>

@@ -3,6 +3,7 @@ from contextlib import redirect_stdout
 from typing import Any, Dict
 import myspark
 from random import randint
+import flaskr #not from x import x. To avoid circular imports
 
 def _random_id()->str:
     return str(randint(1000, 9999))
@@ -36,17 +37,19 @@ class Cell:
 class Notebook:
     id:str
     user_id:str
-    file_id:str
-    cluster_id:str
+    file:flaskr.File
+    cluster:flaskr.Cluster
+    user:flaskr.User
+    name:str
 
     vars: Dict[str, Any] = { }
     cells:list[Cell] = []
     _original_keys: set[str]
 
-    def __init__(self,user_id:str, file_id:str, cluster_id:str, id:str=""):
-        self.user_id = user_id
-        self.file_id = file_id
-        self.cluster_id = cluster_id
+    def __init__(self,user:flaskr.User, file:flaskr.File, cluster:flaskr.Cluster, id:str=""):
+        self.file = file
+        self.cluster = cluster
+        self.user = user
 
         if not id: id = _random_id()
         self.id = id
@@ -55,18 +58,14 @@ class Notebook:
         self._original_keys = set(globals().keys()) 
 
     def save_cells(self, cells: list[Cell]):
-        print('here1', flush=True)
         old_cell_map:dict[str,Cell] = {} 
         for cell in self.cells:
             old_cell_map[cell.id] = cell
 
-        print('here2', flush=True)
         new_cells: list[Cell] = []
 
         for cell in cells:
-            print('here3',cell.__dict__, flush=True)
             if cell.id in old_cell_map:
-                print('here5', flush=True)
                 #retain errors and results
                 old_cell = old_cell_map[cell.id]
                 old_cell.content = cell.content
@@ -75,7 +74,6 @@ class Notebook:
                 cell.vars=self.vars
                 new_cells.append(cell)
 
-        print('here4', flush=True)
         self.cells = new_cells
 
     def run(self, index:int):
@@ -103,9 +101,9 @@ class Notebook:
     def to_dict(self)->Dict[str, Any]:
         return {
             "id": self.id,
-            "userId":self.user_id,
-            "fileId": self.file_id,
-            "clusterId": self.cluster_id,
+            "user":self.user.to_dict(),
+            "file": self.file.to_dict(),
+            "cluster": self.cluster.to_dict(),
 
             "cells": [
                 {
