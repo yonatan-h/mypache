@@ -104,6 +104,9 @@ class DB:
         cluster = Cluster(name=name, workers=idles, user_id=user_id, runtime=runtime) 
         self._clusters.append(cluster)
         return cluster
+    
+    def get_clusters(self, user_id:str)->list[Cluster]:
+        return [c for c in self._clusters if c.user_id == user_id]
 
 
 db = DB()

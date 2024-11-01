@@ -2,7 +2,7 @@ import axios from "axios";
 
 const TOKEN = "token";
 export function getToken(): string | null {
-  return sessionStorage.getItem(TOKEN) || null;
+  return sessionStorage.getItem(TOKEN);
 }
 
 export function setToken(token: string): void {

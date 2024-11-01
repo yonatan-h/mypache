@@ -4,12 +4,22 @@ from flaskr.middlewares import get_user
 
 bp = Blueprint('clusters', __name__, url_prefix='/clusters')
 
+
+@bp.get('')
+def get_clusters():
+    try:    
+        user = get_user()
+    except Exception as e:
+        return {"error":str(e)},402
+    
+    return {"clusters":[ c.to_dict() for c in db.get_clusters(user_id=user.id) ]}
+
 @bp.get('/runtimes')
 def worker_types():
     #Todo: allow workers to give this info on registration
     return {"runtimes":[ r.to_dict() for r in db.get_cluster_runtimes() ]}
 
-@bp.post('/')
+@bp.post('')
 def create_cluster():
     try:    
         user = get_user()
@@ -18,7 +28,7 @@ def create_cluster():
 
     json = request.json
     if not json:
-        raise Exception("No data provided")
+        return {"error": "No json provided"},400
     
     name:str|None = json.get('name')
     workers:int|None = json.get('workers')

@@ -44,7 +44,7 @@ class Cluster:
     def to_dict(self) -> Dict[str, Any] :
         return {
             "id":self.id,
-            "state":self.state,
+            "state":self.state.value,
             "userId":self.user_id,
             "name":self.name,
             "workers":[w.to_dict(hide_address=True) for w in self.workers],
