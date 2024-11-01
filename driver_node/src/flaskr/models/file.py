@@ -1,15 +1,21 @@
 from flaskr.utils import random_id
 
+allowed_extensions = ["csv"]
+
 class File:
     id: str
     filename: str
+    user_id: str
 
-    def __init__(self, filename:str, id:str=""):
+    def __init__(self, filename:str, id:str="", user_id:str=""):
         self.filename = filename
-        if not id:
-            self.id = random_id()
+        self.user_id = user_id
+        if not id: self.id = random_id()
+
     def to_dict(self):
         return {
-            "filename": self.filename
+            "id": self.id,
+            "filename": self.filename,
+            "user_id": self.user_id
         }
 

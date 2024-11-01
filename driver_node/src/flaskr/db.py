@@ -17,6 +17,7 @@ class DB:
     _clusterRuntimes: list[ClusterRuntime] = [
         ClusterRuntime(id="1sts", name="1.0 LTS", lang="Python 3.14")
     ]
+    _files: list[File] = [File(id="1",filename="default.csv")]
 
     def get_notebooks(self, user_id:str="")->list[Notebook]:
         if user_id: 
@@ -123,6 +124,15 @@ class DB:
                     raise Exception("Cluster not owned by user")
                 return cluster
         raise Exception(f"Cluster with id {cluster_id} not found")
+    
+    def add_file(self, file:File):
+        self._files.append(file)
+    
+    def get_files(self, user_id:str="")->list[File]:
+        if not user_id:
+            return self._files
+        
+        return [f for f in self._files if f.user_id == user_id]
 
 
 db = DB()
