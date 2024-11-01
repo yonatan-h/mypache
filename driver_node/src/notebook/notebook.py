@@ -25,6 +25,8 @@ class Cell:
     
     def run(self, content:str):
         string_io = StringIO()
+        self.result = ""
+        self.error = ""
         with redirect_stdout(string_io):
             try:
                 exec(content, self.vars)
