@@ -55,7 +55,7 @@ export function useGetClusters() {
         "/clusters"
       );
 
-      return response.data.clusters;
+      return [...response.data.clusters].reverse();
     },
     onError: errorToast,
   });
