@@ -14,7 +14,11 @@ def login_ish():
 
 @bp.get('/me')
 def get_me():
-    user = get_user()
+    try:
+        user = get_user()
+    except Exception as e:
+        return {"error":str(e)},401
+
     return {"user":user.to_dict()}
 
 

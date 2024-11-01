@@ -54,8 +54,8 @@ export function blockNoAuth() {
         navigate("/");
       }
     },
-    onError: () => {
-      navigate("/");
+    onError: (e) => {
+      if (e.response?.status === 401) navigate("/");
     },
     retry: false,
   });

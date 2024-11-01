@@ -10,7 +10,7 @@ def get_user():
     
     token = auth.split(" ")[1]
     if not db.has_user(token):
-        raise Exception("User not found")
+        raise Exception(f"User with id={token} not found")
     
     return db.get_user(token)
 

@@ -10,7 +10,7 @@ def get_clusters():
     try:    
         user = get_user()
     except Exception as e:
-        return {"error":str(e)},402
+        return {"error":str(e)},401
     
     return {"clusters":[ c.to_dict() for c in db.get_clusters(user_id=user.id) ]}
 
@@ -24,7 +24,7 @@ def create_cluster():
     try:    
         user = get_user()
     except Exception as e:
-        return {"error":str(e)},402
+        return {"error":str(e)},401
 
     json = request.json
     if not json:

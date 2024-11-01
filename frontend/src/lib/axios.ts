@@ -2,11 +2,14 @@ import axios from "axios";
 
 const TOKEN = "token";
 export function getToken(): string | null {
-  return sessionStorage.getItem(TOKEN);
+  //Todo: save real token after experimentation
+  return "1";
 }
 
 export function setToken(token: string): void {
-  sessionStorage.setItem(TOKEN, token);
+  console.log("🚀 ~ setToken ~ token:", token);
+  //Todo: save real token after experimentation
+  sessionStorage.setItem(TOKEN, "1");
 }
 
 export const apiClient = axios.create({
