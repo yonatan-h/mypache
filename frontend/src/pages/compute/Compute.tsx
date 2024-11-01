@@ -1,5 +1,6 @@
 import Loading from "@/components/state/Loading";
 import { useGetClusters } from "@/services/compute";
+import { useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BiServer, BiTimeFive } from "react-icons/bi";
 import { CiSettings } from "react-icons/ci";
@@ -13,6 +14,7 @@ import ComputeRow from "./components/ComputeRow";
 
 export default function ComputePage() {
   const clusterQ = useGetClusters();
+  const [search, setSearch] = useState("");
 
   return (
     <div className="flex flex-col gap-6">
@@ -25,6 +27,8 @@ export default function ComputePage() {
           <Input
             className="pl-9"
             placeholder="Filter compute you have access to"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
@@ -99,9 +103,13 @@ export default function ComputePage() {
                 </td>
               </tr>
             )}
-            {clusterQ.data?.map((cluster) => (
-              <ComputeRow cluster={cluster} key={cluster.id} />
-            ))}
+            {clusterQ.data
+              ?.filter((c) =>
+                c.name.toLowerCase().includes(search.toLowerCase())
+              )
+              .map((cluster) => (
+                <ComputeRow cluster={cluster} key={cluster.id} />
+              ))}
           </tbody>
         </table>
       </div>
