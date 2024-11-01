@@ -37,13 +37,22 @@ def upload_file():
         return {"error":str(e)},500
 
     
-    new_file = File(filename=target_name, user_id=user.id)
+    new_file = File(filename=f"{target_name}.{extension}", user_id=user.id)
     db.add_file(new_file)
     
     return {"file":new_file.to_dict()},200
     
 
+@bp.get('')
+def get_files():
+    try:    
+        user = get_user()
+    except Exception as e:
+        return {"error":str(e)},401
 
+    files = db.get_files(user_id=user.id)
+    print("files areeeee",files, flush=True)
+    return {"files":[f.to_dict() for f in files]},200
     
 
 

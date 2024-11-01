@@ -1,4 +1,4 @@
-import { useUploadFile } from "@/services/data";
+import { useUploadSparkFile } from "@/services/data";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
@@ -18,7 +18,7 @@ export default function Data() {
   const [targetName, setTargetName] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
-  const uploadQ = useUploadFile();
+  const uploadQ = useUploadSparkFile();
   const navigate = useNavigate();
 
   return (

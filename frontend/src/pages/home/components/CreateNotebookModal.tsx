@@ -1,8 +1,13 @@
+import Loading from "@/components/state/Loading";
+import { useGetClusters } from "@/services/compute";
+import { useGetSparkFiles } from "@/services/data";
 import { useState } from "react";
+import { AiFillFileText } from "react-icons/ai";
 import { BiStop } from "react-icons/bi";
 import { CgSpinner } from "react-icons/cg";
+import { ImFileEmpty } from "react-icons/im";
 import { RxDotFilled } from "react-icons/rx";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import {
   Dialog,
@@ -14,46 +19,25 @@ import {
 } from "../../../components/ui/dialog";
 import { Label } from "../../../components/ui/label";
 import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group";
-import { Cluster, File } from "../../../types/main-types";
 
 export default function CreateNotebookModal() {
-  const computes: Cluster[] = [
-    {
-      id: "1",
-      state: "live",
-      name: "compute1",
-      runTime: "1.0 STS (Python 3.13, Node 20.18)",
-      numWorkers: 3,
-    },
+  const [open, setOpen] = useState(false);
+  const clusterQ = useGetClusters();
+  const filesQ = useGetSparkFiles();
 
-    {
-      id: "2",
-      state: "stopped",
-      name: "compute2",
-      runTime: "1.0 STS (Python 3.13, Node 20.18)",
-      numWorkers: 3,
-    },
-
-    {
-      id: "3",
-      state: "loading",
-      name: "compute3",
-      runTime: "1.0 STS (Python 3.13, Node 20.18)",
-      numWorkers: 3,
-    },
-  ];
-
-  const files: File[] = [
-    { id: "1", name: "file1" },
-    { id: "2", name: "file2" },
-  ];
-
-  const [computeId, setComputeId] = useState(computes[0].id);
-  const [fileName, setFileId] = useState(files[0].id);
+  const [computeId, setComputeId] = useState("");
+  const [fileId, setFileId] = useState("");
   const navigate = useNavigate();
 
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        setComputeId("");
+        setFileId("");
+        setOpen(v);
+      }}
+    >
       <DialogTrigger asChild>
         <div>
           <Button variant="outline">Create Notebook</Button>
@@ -79,14 +63,30 @@ export default function CreateNotebookModal() {
             onValueChange={(v) => setComputeId(v)}
             required
           >
-            {computes.map((c) => (
+            <Loading isLoading={clusterQ.isLoading} />
+
+            {clusterQ.data?.length === 0 && (
+              <div className="flex justify-between items-center">
+                <span className="flex items-center gap-2">
+                  <ImFileEmpty />
+                  No clusters found.
+                </span>
+                <Link to="/app/compute/new-cluster" className="font-bold">
+                  <Button>Add a File</Button>
+                </Link>
+              </div>
+            )}
+            {clusterQ.data?.map((c) => (
               <div key={c.id} className="flex items-center space-x-2">
                 <RadioGroupItem
                   value={c.id}
                   id={"c" + c.id}
                   disabled={c.state !== "live"}
                 />
-                <Label htmlFor={"c" + c.id} className="flex gap-2 items-center">
+                <Label
+                  htmlFor={"c" + c.id}
+                  className="flex gap-2 items-center cursor-pointer"
+                >
                   <div className="flex items-center">
                     {c.state === "live" && (
                       <RxDotFilled className="text-3xl text-green-600" />
@@ -101,7 +101,7 @@ export default function CreateNotebookModal() {
                     )}
                     <span>{c.name}</span>
                   </div>
-                  <span>{c.numWorkers} workers</span>
+                  <span>({c.workers.length} workers)</span>
                 </Label>
               </div>
             ))}
@@ -109,21 +109,41 @@ export default function CreateNotebookModal() {
           <hr />
 
           <RadioGroup
-            value={fileName}
+            value={fileId}
             onValueChange={(v) => setFileId(v)}
             required
           >
-            {files.map((f) => (
+            <Loading isLoading={filesQ.isLoading} />
+            {filesQ.data?.length === 0 && (
+              <div className="flex justify-between items-center">
+                <span className="flex items-center gap-2">
+                  <ImFileEmpty />
+                  No files found.
+                </span>
+                <Link to="/app/data" className="font-bold">
+                  <Button>Add a File</Button>
+                </Link>
+              </div>
+            )}
+            {filesQ.data?.map((f) => (
               <div key={f.id} className="flex items-center space-x-2">
                 <RadioGroupItem value={f.id} id={"f" + f.id} />
-                <Label htmlFor={"f" + f.id} className="flex gap-2 items-center">
-                  {f.name}
+                <Label
+                  htmlFor={"f" + f.id}
+                  className="flex gap-2 items-center cursor-pointer"
+                >
+                  <AiFillFileText className="ml-2" />
+                  {f.filename}
                 </Label>
               </div>
             ))}
           </RadioGroup>
           <hr />
-          <Button>Create</Button>
+          <Button
+            disabled={filesQ.data?.length === 0 || clusterQ.data?.length === 0}
+          >
+            Create
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

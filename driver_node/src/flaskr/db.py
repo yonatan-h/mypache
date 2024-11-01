@@ -8,16 +8,14 @@ from flaskr.models.cluster import Cluster, ClusterRuntime
 
 class DB:
     _notebooks: list[Notebook] = [
-        Notebook(user_id="1", file_id="file1", cluster_id="cluster1",id="1")
     ]
     _users: list[User] = [User(id="1")]
-    _files: list[File] = [File(id="1",filename="file1")]
     _workers: list[Worker] = []
     _clusters: list[Cluster] = []
     _clusterRuntimes: list[ClusterRuntime] = [
         ClusterRuntime(id="1sts", name="1.0 LTS", lang="Python 3.14")
     ]
-    _files: list[File] = [File(id="1",filename="default.csv")]
+    _files: list[File] = [File(id="1",filename="default.csv", user_id="1")]
 
     def get_notebooks(self, user_id:str="")->list[Notebook]:
         if user_id: 
@@ -132,7 +130,12 @@ class DB:
         if not user_id:
             return self._files
         
-        return [f for f in self._files if f.user_id == user_id]
+        files:list[File] = []
+        for file in self._files:
+            if file.user_id == user_id:
+                files.append(file)
+
+        return files
 
 
 db = DB()
