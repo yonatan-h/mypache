@@ -98,6 +98,23 @@ export function ContentEditable({
           updateCursorIndex();
           onValueChange(divRef.current?.textContent || "");
         }}
+        onKeyDown={(e) => {
+          if (e.key === "Tab") {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const sel = window.getSelection();
+            const range = sel?.getRangeAt(0);
+            if (!range) return;
+
+            const node = document.createTextNode("  ");
+            range.insertNode(node);
+            range.setStartAfter(node);
+            range.collapse();
+            sel?.removeAllRanges();
+            sel?.addRange(range);
+          }
+        }}
       >
         {children}
       </div>
