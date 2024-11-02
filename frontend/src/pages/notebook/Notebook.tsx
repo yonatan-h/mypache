@@ -1,7 +1,9 @@
 import Loading from "@/components/state/Loading";
+import { Button } from "@/components/ui/button";
 import { useGetNotebook, useRunNotebook } from "@/services/notebook";
 import { Notebook } from "@/types/notebook";
 import { useEffect, useState } from "react";
+import { MdAdd } from "react-icons/md";
 import { useParams } from "react-router-dom";
 import CellComponent from "./components/Cell";
 
@@ -11,6 +13,17 @@ export default function NotebookPage() {
   const runQ = useRunNotebook();
 
   const [notebook, setNotebook] = useState<Notebook | null>(null);
+
+  useEffect(() => {
+    console.log("here");
+    if (!notebookQ.data) return;
+    setNotebook({
+      numRuns: notebook?.numRuns || 0,
+      ...notebookQ.data,
+      cells: notebookQ.data.cells.map((cell) => ({ ...cell, loading: false })),
+    });
+  }, [notebook?.numRuns, notebookQ.data]);
+
   const runCell = (cellIndex: number) => {
     if (!notebook) return;
     const newNotebook = {
@@ -31,15 +44,17 @@ export default function NotebookPage() {
     });
   };
 
-  useEffect(() => {
-    console.log("here");
-    if (!notebookQ.data) return;
-    setNotebook({
-      numRuns: notebook?.numRuns || 0,
-      ...notebookQ.data,
-      cells: notebookQ.data.cells.map((cell) => ({ ...cell, loading: false })),
-    });
-  }, [notebook?.numRuns, notebookQ.data]);
+  const addCell = () => {
+    if (!notebook) return;
+    const newNotebook = {
+      ...notebook,
+      cells: [
+        ...notebook.cells,
+        { content: "", error: "", result: "", loading: false },
+      ],
+    };
+    setNotebook(newNotebook);
+  };
 
   return (
     <div className="flex flex-col gap-6 max-w-[1200px] m-auto">
@@ -56,15 +71,21 @@ export default function NotebookPage() {
           </span>
         </h1>
       )}
-      {notebook?.cells.map((_, index) => (
+      {notebook?.cells.map((c, index) => (
         <CellComponent
-          key={index}
+          key={index + JSON.stringify(c)}
           notebook={notebook}
           setNotebook={setNotebook}
           runCell={runCell}
           cellIndex={index}
         />
       ))}
+      <div>
+        <Button onClick={addCell} variant={"outline"}>
+          <MdAdd />
+          New Cell
+        </Button>
+      </div>
     </div>
   );
 }

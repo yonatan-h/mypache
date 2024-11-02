@@ -25,6 +25,14 @@ export default function CellComponent({
     setNotebook({ ...notebook, cells: newCells });
   };
 
+  const remove = () => {
+    const newCells = [
+      ...notebook.cells.slice(0, cellIndex),
+      ...notebook.cells.slice(cellIndex + 1),
+    ];
+    setNotebook({ ...notebook, cells: newCells });
+  };
+
   return (
     <div className="  relative text-sm font-mono border-l-2 border-primary/30 pl-3">
       <div className="flex absolute gap-2 right-3 top-3 items-center">
@@ -39,7 +47,7 @@ export default function CellComponent({
             <BiPlay />
           </Button>
         )}
-        <Button variant={"ghost"} className="w-6 h-5">
+        <Button variant={"ghost"} className="w-6 h-5" onClick={remove}>
           <AiFillDelete />
         </Button>
       </div>
