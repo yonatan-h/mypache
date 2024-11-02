@@ -73,7 +73,7 @@ export default function NotebookPage() {
       )}
       {notebook?.cells.map((c, index) => (
         <CellComponent
-          key={index + JSON.stringify(c)}
+          key={`${index}-${c.id}`}
           notebook={notebook}
           setNotebook={setNotebook}
           runCell={runCell}

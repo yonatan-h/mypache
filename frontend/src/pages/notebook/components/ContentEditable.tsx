@@ -1,45 +1,53 @@
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
-const getIndex = (parent: Node, child: Node, offset: number): number | null => {
-  if (!parent.contains(child)) {
-    console.error("child is not in parent");
-    return null;
+//passed
+const getCursorIndex = (parent: Node, target: Node, offset: number): number => {
+  if (parent !== target && !parent.contains(target)) {
+    throw new Error("The cursor is not found in the parent node");
   }
-  if (parent === child) return offset;
+
+  if (parent === target) return offset;
 
   let index = 0;
   for (const node of parent.childNodes) {
-    if (node.contains(child)) {
-      const childIndex = getIndex(node, child, offset);
-      if (childIndex === null) return null;
-      index += childIndex;
-
-      break;
-    } else {
-      index += node.textContent?.length || 0;
+    if (node.contains(target) || node === target) {
+      return index + getCursorIndex(node, target, offset);
     }
+    index += node.textContent?.length || 0;
   }
-  return index;
+  throw new Error("Something is terribly terribly wrong with the cursor");
 };
 
-const getNodeAndOffset = (
-  parent: Node,
-  index: number
-): [Node, number] | null => {
-  if (index === 0 || parent.childNodes.length === 0) {
-    return [parent, index];
+const landCursor = (parent: Node, offset: number) => {
+  const range = document.createRange();
+  const sel = window.getSelection();
+  range.setStart(parent, offset);
+  range.collapse();
+  sel?.removeAllRanges();
+  sel?.addRange(range);
+};
+
+const restoreCursor = (parent: Node, remainingChars: number) => {
+  const isWithin = remainingChars <= (parent.textContent?.length || 0);
+  if (!isWithin) {
+    throw new Error("The cursor is out of bounds");
+  }
+
+  if (isWithin && !parent.hasChildNodes()) {
+    landCursor(parent, remainingChars);
+    return;
   }
 
   for (const node of parent.childNodes) {
-    const length = node.textContent?.length || 0;
-    if (index > length) {
-      index -= length;
-    } else {
-      return getNodeAndOffset(node, index);
-    }
+    const len = node.textContent?.length || 0;
+    remainingChars -= len;
+    if (remainingChars > 0) continue;
+    restoreCursor(node, remainingChars + len);
+    return;
   }
-  console.error(`out of bounds, remaining offset ${index}`);
-  return null;
+  throw new Error(
+    `Something is terribly terribly wrong with the cursor, ${remainingChars} ${parent.textContent}`
+  );
 };
 
 export function ContentEditable({
@@ -51,91 +59,45 @@ export function ContentEditable({
   className?: string;
   children: ReactNode;
 }) {
-  const input = useRef<HTMLDivElement>(null);
-  const index = useRef<number | null>(null);
+  const divRef = useRef<HTMLDivElement>(null);
+  const [cursorIndex, setCursorIndex] = useState<number | null>(null);
+
+  const updateCursorIndex = () => {
+    const range = window.getSelection()?.getRangeAt(0);
+    const offset = range?.startOffset || 0;
+    const node = range?.startContainer;
+    if (node && divRef.current?.contains(node)) {
+      const cursorIndex = getCursorIndex(divRef.current, node, offset);
+      setCursorIndex(cursorIndex);
+      console.log("cursor index", cursorIndex);
+    }
+  };
 
   useEffect(() => {
-    restoreSelection();
-  }, [input.current?.textContent]);
-
-  const restoreSelection = () => {
-    if (!input.current) return;
-
-    const range = document.createRange();
-    range.selectNodeContents(input.current);
-    const res = getNodeAndOffset(input.current, index.current || 0);
-    if (!res) return;
-
-    const [node, offset] = res;
-    range.setStart(node, offset);
-    range.setEnd(node, offset);
-    window.getSelection()?.removeAllRanges();
-    window.getSelection()?.addRange(range);
-    console.log("restored selection");
-  };
-
-  const getCursorIndex = (): number | null => {
-    if (!input.current) return null;
-    const selection = window.getSelection();
-    if (!selection?.anchorNode) return null;
-
-    const index = getIndex(
-      input.current,
-      selection.anchorNode,
-      selection.focusOffset
-    );
-    console.log("🚀 ~ getCursorIndex ~ index:", index);
-    return index;
-  };
-
-  const saveCursorIndex = (number?: number) => {
-    if (input.current === null) {
-      console.error("input is null");
-      return;
+    const div = divRef.current;
+    if (!div || div.textContent === null) return console.log("No div");
+    if (cursorIndex === null) return console.log("No index");
+    if (cursorIndex > div.textContent.length || cursorIndex < 0) {
+      return console.error("bad cursor index");
     }
-
-    if (number) {
-      index.current = number;
-    } else {
-      index.current = getCursorIndex();
-    }
-  };
-
-  const onInput = () => {
-    saveCursorIndex();
-    onValueChange(input.current?.textContent || "");
-  };
-
-  //handle special key presses
-  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Tab") {
-      event.preventDefault();
-
-      const selection = window.getSelection();
-      if (!selection) return console.error("no selection");
-      const range = selection.getRangeAt(0);
-
-      const tabNode = document.createTextNode("  ");
-      range.insertNode(tabNode);
-
-      range.setStartAfter(tabNode);
-      range.setEndAfter(tabNode);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  };
+    restoreCursor(div, cursorIndex);
+  }, [cursorIndex, divRef.current?.textContent]);
 
   return (
     <>
+      <p>Cursor {JSON.stringify({ cursorIndex })}</p>
       <div
         key={Math.random()}
-        ref={input}
+        ref={divRef}
+        onBlur={() => setCursorIndex(null)}
         suppressContentEditableWarning
         contentEditable="plaintext-only"
         spellCheck="false"
         className={className}
-        onInput={onInput}
-        onKeyDown={onKeyDown}
+        onInput={() => {
+          updateCursorIndex();
+          onValueChange(divRef.current?.textContent || "");
+        }}
       >
         {children}
       </div>
