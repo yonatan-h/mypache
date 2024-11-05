@@ -3,6 +3,7 @@ from werkzeug.datastructures import FileStorage
 from flaskr.models.file import allowed_extensions, File
 from flaskr.db import db
 from flaskr.middlewares import get_user
+from flaskr.utils import random_id
 
 bp = Blueprint('files', __name__, url_prefix='/files')
 
@@ -54,5 +55,37 @@ def get_files():
     print("files areeeee",files, flush=True)
     return {"files":[f.to_dict() for f in files]},200
     
+@bp.get('/<id>/sliced/<parts>/<part>')
+def get_slice(id:str, parts:int, part:int):
+    try:    
+        user = get_user()
+    except Exception as e:
+        return {"error":str(e)},401
+
+    try:
+        file = db.get_file(file_id=id, user_id=user.id)
+    except Exception as e:
+        return {"error":str(e)},404
+    
+    #Todo: improve
+    content:str = ""
+    with open(f"/tmp/{file.filename}") as original_file:
+        print(original_file, flush=True)
+        content = original_file.read()
+    
+    sliced_name = random_id()
+    #-1 to remove cols
+    part_len = (len(content)-1)//parts
+    with open(f"/tmp/{sliced_name}", 'w') as sliced_file:
+        from_ind = part*part_len
+        to_ind = (part+1)*part_len
+        if part == parts-1: to_ind = len(content)
+
+        sliced_file.write(content[from_ind: to_ind])
+    
+
+    return {"fileName":sliced_name}
+
+
 
 

@@ -12,6 +12,12 @@ from flaskr.routes.clusters import bp as clusters_bp
 from flaskr.routes.files import bp  as files_bp
 from flask_cors import CORS
 
+
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
+
 __all__ = ["File", "Cluster", "User"]
 
 def create_app():

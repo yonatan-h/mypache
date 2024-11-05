@@ -4,16 +4,22 @@ import requests
 from threading import Thread
 from time import sleep
 
+
+import logging
+
+
 #like a heart beat
 def tell_driver(my_addr:str):
+
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+
     print("Telling driver to start working...", flush=True)
     while True:
         try:
-            res = requests.post('http://driver-service:5000/workers/register', json={
+             requests.post('http://driver-service:5000/workers/register', json={
                 "address": my_addr
             })
-            data = res.text
-            print(data, flush=True)
         except requests.exceptions.RequestException as e:
             print(f"Failed to tell driver: {e}", flush=True)
             
@@ -22,6 +28,7 @@ def tell_driver(my_addr:str):
 
 if __name__ == '__main__':
     app = Flask(__name__)
+
 
     @app.get('/')
     def hello():

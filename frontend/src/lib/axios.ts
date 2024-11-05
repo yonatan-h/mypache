@@ -7,7 +7,6 @@ export function getToken(): string | null {
 }
 
 export function setToken(token: string): void {
-  console.log("🚀 ~ setToken ~ token:", token);
   //Todo: save real token after experimentation
   sessionStorage.setItem(TOKEN, "1");
 }

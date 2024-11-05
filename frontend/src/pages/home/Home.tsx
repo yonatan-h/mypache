@@ -56,10 +56,10 @@ export default function Home() {
                 <div>
                   <h3 className="font-bold">{notebook.cluster.name}</h3>
                   <p className="text-foreground/80">
-                    Notebook - {notebook.cluster.runtime.name}
+                    Notebook - {notebook.cluster.runtime.lang}
                   </p>
                 </div>
-                <Link to={`/notebook/${notebook.id}`}>
+                <Link to={`/app/notebooks/${notebook.id}`}>
                   <Button variant={"outline"}>Open</Button>
                 </Link>
               </div>

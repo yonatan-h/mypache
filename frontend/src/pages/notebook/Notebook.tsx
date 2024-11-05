@@ -15,7 +15,6 @@ export default function NotebookPage() {
   const [notebook, setNotebook] = useState<Notebook | null>(null);
 
   useEffect(() => {
-    console.log("here");
     if (!notebookQ.data) return;
     setNotebook({
       numRuns: notebook?.numRuns || 0,
@@ -44,20 +43,35 @@ export default function NotebookPage() {
     });
   };
 
-  const addCell = () => {
+  const addCell = (content: string = "") => {
     if (!notebook) return;
     const newNotebook = {
       ...notebook,
       cells: [
         ...notebook.cells,
-        { content: "", error: "", result: "", loading: false },
+        { content, error: "", result: "", loading: false },
       ],
     };
     setNotebook(newNotebook);
   };
 
+  // Todo: remove on prod
+  const lastCell = notebook?.cells[notebook.cells.length - 1];
+  useEffect(() => {
+    if (!lastCell) return;
+    if (notebook && notebook?.cells.length <= 1) return;
+    localStorage.setItem("cell", lastCell?.content);
+  }, [lastCell?.content]);
+
   return (
     <div className="flex flex-col gap-6 max-w-[1200px] m-auto">
+      <Button
+        onClick={() => {
+          addCell(localStorage.getItem("cell") || "print('h')");
+        }}
+      >
+        Add last cell
+      </Button>
       {notebookQ.isLoading && (
         <p className="flex gap-2 items-center">
           <Loading isLoading /> Loading notebook
@@ -81,7 +95,7 @@ export default function NotebookPage() {
         />
       ))}
       <div>
-        <Button onClick={addCell} variant={"outline"}>
+        <Button onClick={() => addCell()} variant={"outline"}>
           <MdAdd />
           New Cell
         </Button>

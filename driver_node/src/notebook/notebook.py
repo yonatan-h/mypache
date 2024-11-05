@@ -10,7 +10,7 @@ def _random_id()->str:
 
 
 class Cell:
-    id:str =_random_id()
+    id:str
     content:str
     error:str = ""
     result:str = ""
@@ -19,6 +19,7 @@ class Cell:
     def __init__(self, vars: Dict[str, Any]={}, id:str="", content:str="", error:str="", result:str=""):
         self.vars = vars
         if id: self.id = id
+        else: self.id = _random_id()
         self.content = content
         self.error = error
         self.result = result
@@ -33,6 +34,14 @@ class Cell:
             except Exception as e:
                 self.error = str(e)
         self.result = string_io.getvalue()
+    
+    def to_dict(self)->Dict[str, Any]:
+        return {
+            "id": self.id,
+            "content": self.content,
+            "result": self.result,
+            "error": self.error
+        }
         
 
 
@@ -56,8 +65,8 @@ class Notebook:
         self.id = id
 
         self.cells = [Cell(self.vars, content="""\
-# Do anything
-print("Hello World")
+import myspark
+myspark.say_hello()
 """)]
         self._original_keys = set(globals().keys()) 
 
@@ -66,18 +75,21 @@ print("Hello World")
         for cell in self.cells:
             old_cell_map[cell.id] = cell
 
+
+        print("cells", [c.to_dict() for c in cells], flush=True)
         new_cells: list[Cell] = []
 
         for cell in cells:
             if cell.id in old_cell_map:
+                print("exists cell id", cell.id, flush=True)
                 #retain errors and results
                 old_cell = old_cell_map[cell.id]
                 old_cell.content = cell.content
                 new_cells.append(old_cell)
             else:
+                print("not exists cell id", cell.id, flush=True)
                 cell.vars=self.vars
                 new_cells.append(cell)
-
         self.cells = new_cells
 
     def run(self, index:int):
@@ -109,14 +121,7 @@ print("Hello World")
             "file": self.file.to_dict(),
             "cluster": self.cluster.to_dict(),
 
-            "cells": [
-                {
-                    "id": cell.id,
-                    "content": cell.content,
-                    "result": cell.result,
-                    "error": cell.error
-                } for cell in self.cells
-            ]
+            "cells": [ cell.to_dict() for cell in self.cells ]
         }
 
 
