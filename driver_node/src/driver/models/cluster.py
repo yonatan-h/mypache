@@ -1,5 +1,5 @@
-from flaskr.models.worker import Worker
-from flaskr.utils import random_id
+from driver.models.worker import Worker
+from driver.utils import random_id
 from typing import Dict, Any
 from enum import Enum
 

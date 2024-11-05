@@ -1,6 +1,6 @@
 from flask import Blueprint, request
-from flaskr.models.worker import Worker
-from flaskr.db import db
+from driver.models.worker import Worker
+from driver.db import db
 from notebook import Notebook
 
 bp = Blueprint('workers', __name__, url_prefix='/workers')

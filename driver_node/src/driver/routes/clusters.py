@@ -1,6 +1,6 @@
 from flask import Blueprint, request
-from flaskr.db import db
-from flaskr.middlewares import get_user
+from driver.db import db
+from driver.middlewares import get_user
 
 bp = Blueprint('clusters', __name__, url_prefix='/clusters')
 

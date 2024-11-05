@@ -1,9 +1,9 @@
 from flask import Blueprint, request
 from werkzeug.datastructures import FileStorage
-from flaskr.models.file import allowed_extensions, File
-from flaskr.db import db
-from flaskr.middlewares import get_user
-from flaskr.utils import random_id
+from driver.models.file import allowed_extensions, File
+from driver.db import db
+from driver.middlewares import get_user
+from driver.utils import random_id
 from flask import send_from_directory
 
 bp = Blueprint('files', __name__, url_prefix='/files')

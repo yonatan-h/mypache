@@ -1,6 +1,6 @@
 
 from flask import request
-from flaskr.db import db
+from driver.db import db
 
 #Todo: replace by middleware
 def get_user():

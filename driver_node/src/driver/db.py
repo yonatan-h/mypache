@@ -1,8 +1,8 @@
 from notebook import Notebook
-from flaskr.models.user import User
-from flaskr.models.file import File
-from flaskr.models.worker import Worker
-from flaskr.models.cluster import Cluster, ClusterRuntime
+from driver.models.user import User
+from driver.models.file import File
+from driver.models.worker import Worker
+from driver.models.cluster import Cluster, ClusterRuntime
 
 
 

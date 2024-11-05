@@ -3,7 +3,7 @@ from contextlib import redirect_stdout
 from typing import Any, Dict
 import myspark
 from random import randint
-import flaskr #not from x import x. To avoid circular imports
+import driver #not from x import x. To avoid circular imports
 
 def _random_id()->str:
     return str(randint(1000, 9999))
@@ -47,16 +47,16 @@ class Cell:
 
 class Notebook:
     id:str
-    file:flaskr.File
-    cluster:flaskr.Cluster
-    user:flaskr.User
+    file:driver.File
+    cluster:driver.Cluster
+    user:driver.User
     name:str
 
     vars: Dict[str, Any] = { }
     cells:list[Cell] = []
     _original_keys: set[str]
 
-    def __init__(self,user:flaskr.User, file:flaskr.File, cluster:flaskr.Cluster, id:str=""):
+    def __init__(self,user:driver.User, file:driver.File, cluster:driver.Cluster, id:str=""):
         self.file = file
         self.cluster = cluster
         self.user = user

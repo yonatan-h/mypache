@@ -1,7 +1,7 @@
 from flask import Blueprint, request
-from flaskr.db import db
+from driver.db import db
 from notebook import Notebook, Cell
-from flaskr.middlewares import get_user
+from driver.middlewares import get_user
 
 bp = Blueprint('notebooks', __name__, url_prefix='/notebooks')
 

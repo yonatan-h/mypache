@@ -1,15 +1,15 @@
 from flask import Flask
 
-from flaskr.models.cluster import Cluster
-from flaskr.models.file import File
-from flaskr.models.user import User
+from driver.models.cluster import Cluster
+from driver.models.file import File
+from driver.models.user import User
 ##
 
-from flaskr.routes.notebooks import bp as notebooks_bp
-from flaskr.routes.user import bp as users_bp
-from flaskr.routes.workers import bp as workers_bp
-from flaskr.routes.clusters import bp as clusters_bp
-from flaskr.routes.files import bp  as files_bp
+from driver.routes.notebooks import bp as notebooks_bp
+from driver.routes.user import bp as users_bp
+from driver.routes.workers import bp as workers_bp
+from driver.routes.clusters import bp as clusters_bp
+from driver.routes.files import bp  as files_bp
 from flask_cors import CORS
 
 

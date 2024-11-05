@@ -1,8 +1,8 @@
 from flask import Blueprint
-from flaskr.utils import random_id
-from flaskr.middlewares import get_user
-from flaskr.db import db
-from flaskr.models.user import User
+from driver.utils import random_id
+from driver.middlewares import get_user
+from driver.db import db
+from driver.models.user import User
 
 bp = Blueprint('users', __name__, url_prefix='/users')
 
