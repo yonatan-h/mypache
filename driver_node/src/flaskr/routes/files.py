@@ -4,6 +4,7 @@ from flaskr.models.file import allowed_extensions, File
 from flaskr.db import db
 from flaskr.middlewares import get_user
 from flaskr.utils import random_id
+from flask import send_from_directory
 
 bp = Blueprint('files', __name__, url_prefix='/files')
 
@@ -52,11 +53,13 @@ def get_files():
         return {"error":str(e)},401
 
     files = db.get_files(user_id=user.id)
-    print("files areeeee",files, flush=True)
     return {"files":[f.to_dict() for f in files]},200
     
 @bp.get('/<id>/sliced/<parts>/<part>')
 def get_slice(id:str, parts:int, part:int):
+    parts = int(parts)
+    part = int(part)
+
     try:    
         user = get_user()
     except Exception as e:
@@ -68,10 +71,10 @@ def get_slice(id:str, parts:int, part:int):
         return {"error":str(e)},404
     
     #Todo: improve
-    content:str = ""
+    content:list[str] = []
     with open(f"/tmp/{file.filename}") as original_file:
         print(original_file, flush=True)
-        content = original_file.read()
+        content = original_file.readlines()
     
     sliced_name = random_id()
     #-1 to remove cols
@@ -79,13 +82,18 @@ def get_slice(id:str, parts:int, part:int):
     with open(f"/tmp/{sliced_name}", 'w') as sliced_file:
         from_ind = part*part_len
         to_ind = (part+1)*part_len
-        if part == parts-1: to_ind = len(content)
 
-        sliced_file.write(content[from_ind: to_ind])
+        #never lose the last row
+        if part == parts-1: to_ind = len(content)
+        #lost the column names
+        if from_ind == 0: from_ind += 1
+
+        sliced_file.write("".join(content[from_ind: to_ind]))
     
 
-    return {"fileName":sliced_name}
-
+    
+    return send_from_directory('/tmp', sliced_name)
+    
 
 
 
