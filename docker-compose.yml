@@ -1,16 +1,20 @@
 services:
   driver-service:
-    build: ./driver_node
+    build:
+      context: ./node
+      dockerfile: Dockerfile.driver
     volumes:
-      - ./driver_node:/app
+      - ./node:/app
       - /app/venv
     ports:
       - 5000:5000
 
   worker-service1:
-    build: ./worker_node
+    build:
+      context: ./node
+      dockerfile: Dockerfile.worker
     volumes:
-      - ./worker_node:/app
+      - ./node:/app
       - /app/venv
     ports:
       - 5001:5001
