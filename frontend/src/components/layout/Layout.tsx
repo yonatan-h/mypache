@@ -25,7 +25,7 @@ export default function Layout() {
           className="flex items-center gap-3 text font-bold text-background/90 "
         >
           <BsBricks />
-          mybricks
+          Mypache
         </Link>
         <Button className="bg-background/20 rounded-full w-8 h-8">
           <Loading isLoading={meQ.isLoading} />

@@ -7,15 +7,16 @@ from flaskr.models.cluster import Cluster, ClusterRuntime
 
 
 class DB:
-    _notebooks: list[Notebook] = [
-    ]
     _users: list[User] = [User(id="1")]
     _workers: list[Worker] = []
     _clusters: list[Cluster] = []
     _clusterRuntimes: list[ClusterRuntime] = [
-        ClusterRuntime(id="1sts", name="1.0 LTS", lang="Python 3.14")
+        ClusterRuntime(id="1", name="1.0 LTS", lang="Python 3.14", )
     ]
     _files: list[File] = [File(id="1",filename="default.csv", user_id="1")]
+
+    _notebooks: list[Notebook] = [ ]
+
 
     def get_notebooks(self, user_id:str="")->list[Notebook]:
         if user_id: 
@@ -48,7 +49,6 @@ class DB:
         return False
 
     def get_user(self, token:str)->User:
-        print(self._users, flush=True)
         for user in self._users:
             if user.id == token:
                 return user
@@ -89,7 +89,7 @@ class DB:
     def get_cluster_runtimes(self)->list[ClusterRuntime]:
         return self._clusterRuntimes
     
-    def create_cluster(self, num_workers:int, user_id:str, name:str, runtime_id:str)->Cluster:
+    def create_cluster(self, num_workers:int, user_id:str, name:str, runtime_id:str, id:str = "")->Cluster:
         if not self.get_user(user_id):
             raise Exception(f"User with id {user_id} not found")
         
@@ -108,7 +108,7 @@ class DB:
         _, idles = self.get_busy_and_idle_workers()
         if len(idles) < num_workers:
             raise Exception(f"Only {len(idles)} workers available")
-        cluster = Cluster(name=name, workers=idles, user_id=user_id, runtime=runtime) 
+        cluster = Cluster(name=name, workers=idles, user_id=user_id, runtime=runtime, id=id) 
         self._clusters.append(cluster)
         return cluster
     

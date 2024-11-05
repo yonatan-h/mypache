@@ -35,6 +35,9 @@ export default function CellComponent({
 
   return (
     <div className="  relative text-sm font-mono border-l-2 border-primary/30 pl-3">
+      <span className="absolute bottom-0 right-3 text-xs  opacity-20">
+        id:{cell.id || "new"}
+      </span>
       <div className="flex absolute gap-2 right-3 top-3 items-center">
         {cell.loading ? (
           <CgSpinner className="  animate-spin text ml-2 mr-1" />

@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from flaskr.models.worker import Worker
 from flaskr.db import db
+from notebook import Notebook
 
 bp = Blueprint('workers', __name__, url_prefix='/workers')
 
@@ -14,19 +15,26 @@ def register():
     if not address:
         raise Exception("No address provided")
 
-    worker = Worker(address=address)
     try:
         if db.has_worker(address):
             return {"message":"Worker already registered"},200
-
-        db.add_worker(worker)
-        #Todo: remove automatic cluster creation after experimentaion
-        clusters = db.get_clusters()
-        if len(clusters) == 0:
-            db.create_cluster(name="default", user_id="1", num_workers=1, runtime_id=db.get_cluster_runtimes()[0].id)
-
+        print("registering worker", flush=True)
     except Exception as e:
         return {"error":str(e)},409
+
+    worker = Worker(address=address)
+    db.add_worker(worker)
+
+    try:    
+        #Todo: remove automatic cluster and notebook creation after experimentaion
+        db.create_cluster(id="1",name="default", user_id="1", num_workers=1, runtime_id=db.get_cluster_runtimes()[0].id)
+        cluster = db.get_cluster(user_id="1", cluster_id="1")
+        user = db.get_user("1")
+        file = db.get_file(file_id="1", user_id="1")
+        db.add_notebook(Notebook(user=user, cluster=cluster, file=file, id="1"))
+
+    except Exception as e:
+        return {"error":str(e)},500
 
     return {"worker":worker.to_dict()}
 

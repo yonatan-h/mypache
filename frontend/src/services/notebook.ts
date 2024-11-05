@@ -32,10 +32,23 @@ export function useGetNotebook(id: string) {
   return useQuery<RetrievedNotebook, AxiosError>({
     queryKey: [NOTEBOOKS, id],
     queryFn: async () => {
-      const res = await apiClient.get<{ notebook: Notebook }>(
+      const res = await apiClient.get<{ notebook: RetrievedNotebook }>(
         `/notebooks/${id}`
       );
       return res.data.notebook;
+    },
+    onError: errorToast,
+  });
+}
+
+export function useGetNotebooks() {
+  return useQuery<RetrievedNotebook[], AxiosError>({
+    queryKey: [NOTEBOOKS],
+    queryFn: async () => {
+      const res = await apiClient.get<{ notebooks: RetrievedNotebook[] }>(
+        `/notebooks`
+      );
+      return res.data.notebooks;
     },
     onError: errorToast,
   });
@@ -49,6 +62,7 @@ export function useRunNotebook() {
     { id: string; cells: RetrievedCell[]; index: number }
   >({
     mutationFn: async ({ id, cells, index }) => {
+      console.log("🚀 ~ mutationFn: ~ cells:", cells);
       await apiClient.put(`/notebooks/${id}/run/${index}`, { cells });
     },
     onError: errorToast,

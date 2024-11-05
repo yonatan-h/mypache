@@ -85,7 +85,7 @@ export function ContentEditable({
 
   return (
     <>
-      <p>Cursor {JSON.stringify({ cursorIndex })}</p>
+      {/* <p>Cursor {JSON.stringify({ cursorIndex })}</p> */}
       <div
         key={Math.random()}
         ref={divRef}

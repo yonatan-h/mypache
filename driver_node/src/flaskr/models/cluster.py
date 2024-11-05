@@ -33,8 +33,10 @@ class Cluster:
     name:str
     runtime:ClusterRuntime
 
-    def __init__(self, name:str, workers:list[Worker], user_id:str, runtime:ClusterRuntime):
-        self.id = random_id()
+    def __init__(self, name:str, workers:list[Worker], user_id:str, runtime:ClusterRuntime, id:str=""):
+        if not id: self.id = random_id()
+        else: self.id = id
+
         self.name = name
         self.workers = workers
         self.user_id = user_id
