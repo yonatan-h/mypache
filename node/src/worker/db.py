@@ -12,13 +12,14 @@ class Database:
                 return df
         raise ValueError(f"WorkerDataFrame with id {id} not found")
     
-    def has_workerdf(self, id:str):
+    def has_df(self, id:str):
         for df in self._dfs:
             if df.id == id:
                 return True
         return False
     
     def add_df(self, df:myspark.WorkerDataFrame):
+        #Todo: remove least recently used df if cache is full
         self._dfs = [df] + self._dfs
         return df
 

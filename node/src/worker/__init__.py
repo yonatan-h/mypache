@@ -12,7 +12,6 @@ log.setLevel(logging.ERROR)
 
 #like a heart beat
 def tell_driver(my_addr:str):
-    return
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
