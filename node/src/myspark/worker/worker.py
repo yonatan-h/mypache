@@ -1,18 +1,19 @@
 from __future__ import annotations
 from myspark.shared.shared import Column, Row, Condition, Operator
+from random import randint
 
 
 class WorkerDataFrame:
     columns: list[Column]
     rows: list[Row]
-
-
+    id: str
 
     def __init__(self, columns: list[Column], rows: list[Row]):
         self.columns = columns
         self.rows = rows
         if len(self.columns) != len(self.rows[0].values):
             raise ValueError("Columns and rows length mismatch")
+        self.id = str(randint(1000, 10000))
 
     
     def print(self):
