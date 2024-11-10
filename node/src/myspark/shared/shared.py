@@ -1,5 +1,6 @@
 from __future__ import annotations
 from enum import Enum
+from typing import Dict, Any
 
 class Operator(Enum):
     Greater = ">"
@@ -43,10 +44,60 @@ class Column:
     def to_dict(self):
         return {"name": self.name}
 
+    @staticmethod
+    def from_dict(data: Dict[str, Any])->Column:
+        if "name" not in data:
+            raise ValueError("name is required")
+        return Column(data["name"])
+
 class Row:
     values: list[Value]
     def __init__(self, values: list[Value]) -> None:
         self.values = values
     def to_dict(self):
         return {"values": self.values}
+    
+    @staticmethod
+    def from_dict(data: Dict[str, Any])->Row:
+        if "values" not in data:
+            raise ValueError("values is required")
+        return Row(data["values"])
 
+
+class WorkerDataframeDTO:
+    id:str
+    columns: list[Column]
+    sliced_rows: list[Row]
+    num_rows: int
+    nth_file_slice:int
+
+    def __init__(self, id:str, columns: list[Column], sliced_rows: list[Row], num_rows: int, nth_file_slice:int) -> None:
+        self.id = id
+        self.columns = columns
+        self.sliced_rows = sliced_rows
+        self.num_rows = num_rows
+        self.nth_file_slice = nth_file_slice
+    
+    def to_dict(self)->Dict[str, Any ]:
+        return {
+            "id": self.id,
+            "columns": [c.to_dict() for c in self.columns],
+            "sliced_rows": [r.to_dict() for r in self.sliced_rows],
+            "num_rows": self.num_rows,
+            "nth_file_slice": self.nth_file_slice
+        }
+    
+    @staticmethod
+    def from_dict(data: Dict[str, Any])->WorkerDataframeDTO:
+        req_keys = ["id", "columns", "sliced_rows", "num_rows", "nth_file_slice"]
+        for key in req_keys:
+            if key not in data:
+                raise ValueError(f"{key} is required")
+
+        return WorkerDataframeDTO(
+            id=data["id"],
+            columns=[Column.from_dict(c) for c in data["columns"]],
+            sliced_rows=[Row.from_dict(r) for r in data["sliced_rows"]],
+            num_rows=data["num_rows"],
+            nth_file_slice=data["nth_file_slice"]
+        )
