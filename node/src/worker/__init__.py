@@ -16,6 +16,7 @@ def tell_driver(my_addr:str):
     log.setLevel(logging.ERROR)
 
     print("Telling driver to start working...", flush=True)
+    wait = 3
     while True:
         try:
              requests.post('http://driver-service:5000/workers/register', json={
@@ -24,7 +25,8 @@ def tell_driver(my_addr:str):
         except requests.exceptions.RequestException as e:
             print(f"Failed to tell driver: {e}", flush=True)
             
-        sleep(2)
+        wait += 1
+        sleep(wait)
 
 def create_app():
     app = Flask(__name__)

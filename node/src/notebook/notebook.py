@@ -64,11 +64,15 @@ class Notebook:
         if not id: id = _random_id()
         self.id = id
 
-        self.cells = [Cell(self.vars, content="""\
-import myspark
-myspark.say_hello()
-""")]
         self._original_keys = set(globals().keys()) 
+
+        self.cells = [Cell(self.vars, content=f"""\
+# File location
+file_name = "{file.filename}"
+""")]
+
+        spark = myspark.MySpark(self.cluster)
+        self.vars['spark'] = spark
 
     def save_cells(self, cells: list[Cell]):
         old_cell_map:dict[str,Cell] = {} 
@@ -125,5 +129,4 @@ myspark.say_hello()
         }
 
 
-myspark.say_hello()
 
