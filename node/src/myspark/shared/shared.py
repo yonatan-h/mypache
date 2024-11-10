@@ -4,29 +4,28 @@ from enum import Enum
 class Operator(Enum):
     Greater = ">"
     Lesser = "<"
-    Equal = "=="
 
 
 
 class Condition:
-    left: str |int| float | Condition
-    right: Operand|None
+    left: str #df.columnname
+    right: Value|None
     operator: Operator | None
 
-    def __init__(self, left: Operand, right: Operand |None = None, operator: Operator|None = None) -> None:
+    def __init__(self, left: str, right: Value |None = None, operator: Operator|None = None) -> None:
         self.left = left
         self.right = right
         self.operator = operator
     
-    def _add_right(self, operator: Operator, right:Operand) -> Condition:
+    def _add_right(self, operator: Operator, right:Value) -> Condition:
         self.right = right
         self.operator = operator
         return self
     
-    def __gt__(self, right:Operand) -> Condition:
+    def __gt__(self, right:Value) -> Condition:
         return self._add_right(Operator.Greater, right)
     
-    def __lt__(self, right:Operand) -> Condition:
+    def __lt__(self, right:Value) -> Condition:
         return self._add_right(Operator.Lesser, right)
     
     def is_valid(self) -> bool:
@@ -34,7 +33,7 @@ class Condition:
             return False
         return True
 
-Operand = str | int | float | Condition
+Value = str | int | float #| Condition #Todo: add composing conditions
     
 
 class Column:
@@ -45,8 +44,8 @@ class Column:
         return {"name": self.name}
 
 class Row:
-    values: list[str|float|int]
-    def __init__(self, values: list[str|float|int]) -> None:
+    values: list[Value]
+    def __init__(self, values: list[Value]) -> None:
         self.values = values
     def to_dict(self):
         return {"values": self.values}
