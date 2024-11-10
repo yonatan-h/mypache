@@ -54,10 +54,35 @@ def new_worker_df():
 
 #Todo: add query for sliced row length
 @bp.get('get/<id>')
-def get_worker_df(id:str):
+def get_df(id:str):
     if not db.has_df(id):
         return {"error":"Dataframe not found"},404
     df = db.get_df(id)
     return df.to_dict()
 
+@bp.post('filter/<id>')
+def filter_df(id:str):
+    if not db.has_df(id):
+        return {"error":"Dataframe not found"},404
+    raw_json = request.json
+    if not raw_json:
+        return {"error":"No json provided"},400
+
+    raw_condition = raw_json.get('raw_condition')
+    if not raw_condition:
+        return {"error":"No condition provided"},400
+    
+    try:
+        condition = myspark.Condition.from_dict(json.loads(raw_condition))
+    except Exception as e:
+        return {"error":str(e)},400
+    
+    df = db.get_df(id)
+    try:
+        new_df = df.filter(condition)
+    except Exception as e:
+        return {"error":str(e)},500
+    
+    db.add_df(new_df)
+    return new_df.to_dict()
 

@@ -1,9 +1,9 @@
 from __future__ import annotations
-from driver.models.cluster import Cluster, ClusterRuntime
+from driver.models.cluster import Cluster
 from driver.models.file import File
-from driver.models.worker import Worker
-from myspark.shared.shared import Condition, Column, Row
+from myspark.shared.shared import Condition, Column, WorkerDataframeDTO
 from random import randint
+import requests
 
 
 
@@ -49,12 +49,11 @@ def display(df:DataFrame):
     print()
 
     print("-"*len(df.columns)*5)
-    for i in range(len(df.row_groups)):
-        row_group = df.row_groups[i]
-        for i,row in enumerate(row_group):
+    for i, worker_df in enumerate(df.worker_dfs):
+        for i,row in enumerate(worker_df.sliced_rows):
             for val in row.values:
                 print(val, end="\t")
-            if i != len(row_group)-1: print()
+            if i != len(worker_df.sliced_rows)-1: print()
             else: print("_")
         
     print("-"*len(df.columns)*5)
@@ -63,39 +62,52 @@ class DataFrame:
     id:str
     myspark: MySpark
     columns: list[Column]
-    row_groups: list[list[Row]]
+    worker_dfs: list[WorkerDataframeDTO]
 
-    def __init__(self, myspark:MySpark, id:str|None=None) -> None:
-        self.columns = []
-        self.row_groups = []
-        if id is not None: self.id = id
-        else: self.id = str(randint(1000, 10000))
-
+    def __init__(
+            self, 
+            myspark:MySpark,
+            worker_dfs:list[WorkerDataframeDTO]|None=None
+        ) -> None:
+        self.id = str(randint(1000, 10000))
         self.myspark = myspark
-        self._fetch_data(id)
+        self.columns = []
+        self.worker_dfs = []
 
-    def _fetch_data(self, id:str|None=None):
-        #Todo: implement
-        self.columns = [Column("x"), Column("y")]
-        self._set_row_groups( [
-            [Row([randint(0,100), 1]),
-             Row([1, 1])],
+        if worker_dfs is None: 
+            self._create_worker_dfs()
+        else:
+            if len(worker_dfs) == 0:
+                raise ValueError("Empty worker_dfs")
+            self.worker_dfs = worker_dfs
+            self.columns = worker_dfs[0].columns
 
-            [Row([2, 2]),
-             Row([2, 2])],
+    def _create_worker_dfs(self):
+        columns: list[Column] = []
+        worker_dfs: list[WorkerDataframeDTO] = []
 
-            [Row([3, 3]),
-            Row([3, 3])],
-        ])
-    
-    def _set_row_groups(self, row_groups: list[list[Row]]):
-        #Todo: implement
-        for (i, row_group) in enumerate(row_groups):
-            for row in row_group:
-                if len(row.values) != len(self.columns):
-                    raise ValueError(f"Row {i} has {len(row.values)} values, expected {len(self.columns)}")
-        self.row_groups = row_groups
+        with open(f"/tmp/{self.myspark.file.filename}") as file:
+            col_line = file.readline()
+            col_names = col_line.split(",")
+            for name in col_names:
+                columns.append(Column(name))
+
+        #Todo: make parallel async requests
+        workers = self.myspark.cluster.workers
+        for i,worker in enumerate(workers):
+            res = requests.post(f"{worker.address}/instruction/new", json={
+                "file_id": self.myspark.file.id,
+                "slices": len(workers),
+                "slice": i,
+                "columns": [c.to_dict() for c in self.columns]
+            })
+            dict = res.json()
+            worker_dfs.append(WorkerDataframeDTO.from_dict(dict))
         
+        self.columns = columns
+        self.worker_dfs = worker_dfs
+
+    
     
     def printSchema(self):
         print("root")
@@ -103,7 +115,17 @@ class DataFrame:
             print(f" |-- {col.name}")
     
     def filter(self, condition:Condition)->DataFrame:
-        return DataFrame(self.myspark)
+        #Todo: make parallel and async
+        new_worker_dfs:list[WorkerDataframeDTO] = []
+        workers = self.myspark.cluster.workers
+        for i, worker_df in enumerate(self.worker_dfs):
+            worker = workers[i]
+            res = requests.post(f"{worker.address}/instruction/filter/{worker_df.id}", json={
+                "condition": condition.to_dict() 
+            })
+            new_worker_df = WorkerDataframeDTO.from_dict(res.json())
+            new_worker_dfs.append(new_worker_df)
+        return DataFrame(self.myspark, worker_dfs=new_worker_dfs)
     
     def __getattribute__(self, name: str) -> Condition:
         try:
@@ -121,28 +143,28 @@ class DataFrame:
 
 ##exec
 
-# File location and type
-file_location = "mycsv.csv"
-file_type = "csv"
+# # File location and type
+# file_location = "mycsv.csv"
+# file_type = "csv"
 
-# CSV options
-infer_schema = "true"
-first_row_is_header = "true"
-delimiter = ","
+# # CSV options
+# infer_schema = "true"
+# first_row_is_header = "true"
+# delimiter = ","
 
-spark = MySpark(
-    cluster=Cluster(
-        runtime=ClusterRuntime(id="1", lang="python", name="pyspark"),
-        name="abc", workers=[Worker(address="abc.com")],
-        user_id="1", ),
-        file=File("mycsv.csv", "1")
-)
-# The applied options are for CSV files. For other file types, these will be ignored.
-df = spark.read.format(file_type) \
-  .option("inferSchema", infer_schema) \
-  .option("header", first_row_is_header) \
-  .option("sep", delimiter) \
-  .load(file_location)
+# spark = MySpark(
+#     cluster=Cluster(
+#         runtime=ClusterRuntime(id="1", lang="python", name="pyspark"),
+#         name="abc", workers=[Worker(address="abc.com")],
+#         user_id="1", ),
+#         file=File("mycsv.csv", "1")
+# )
+# # The applied options are for CSV files. For other file types, these will be ignored.
+# df = spark.read.format(file_type) \
+#   .option("inferSchema", infer_schema) \
+#   .option("header", first_row_is_header) \
+#   .option("sep", delimiter) \
+#   .load(file_location)
 
-df.printSchema()
-display(df.filter(df.x > 1))
+# df.printSchema()
+# display(df.filter(df.x > 1))

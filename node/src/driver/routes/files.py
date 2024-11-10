@@ -90,9 +90,10 @@ def get_slice(id:str, parts:int, part:int):
 
         sliced_file.write("".join(content[from_ind: to_ind]))
     
-
-    
     return send_from_directory('/tmp', sliced_name)
+
+
+
     
 
 

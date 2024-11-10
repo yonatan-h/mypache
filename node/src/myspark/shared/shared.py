@@ -34,6 +34,26 @@ class Condition:
             return False
         return True
 
+    def to_dict(self)->Dict[str, Any]:
+        return {
+            "left": self.left,
+            "right": self.right,
+            "operator": self.operator
+        }
+    
+    @staticmethod
+    def from_dict(dict: Dict[str, Any])->Condition:
+        #Todo: add further value type validation
+        if "left" not in dict: raise ValueError("left is required")
+        if "right" not in dict: raise ValueError("right is required")
+        if "operator" not in dict: raise ValueError("operator is required")
+
+        return Condition(
+            left=dict["left"],
+            right=dict.get("right"),
+            operator=dict.get("operator")
+        )
+
 Value = str | int | float #| Condition #Todo: add composing conditions
     
 
