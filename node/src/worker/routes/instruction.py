@@ -4,7 +4,7 @@ import myspark
 import requests
 import json
 
-bp = Blueprint('instruction', __name__)
+bp = Blueprint('instruction', __name__, url_prefix='/instruction')
 
 @bp.post('new')
 def new_worker_df():

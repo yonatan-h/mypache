@@ -29,10 +29,9 @@ def tell_driver(my_addr:str):
         sleep(wait)
 
 def create_app():
-    app = Flask(__name__)
     Thread(target=tell_driver, args=(environ['ADDR'],), daemon=True).start()
 
-    
+    app = Flask(__name__)
     app.register_blueprint(instruction_bp)
     print(f"Worker #{environ['NAME']} is running")
     return app
