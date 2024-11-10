@@ -4,6 +4,7 @@ from typing import Any, Dict
 import myspark
 from random import randint
 import driver #not from x import x. To avoid circular imports
+import traceback
 
 def _random_id()->str:
     return str(randint(1000, 9999))
@@ -32,7 +33,7 @@ class Cell:
             try:
                 exec(content, self.vars)
             except Exception as e:
-                self.error = str(e)
+                self.error = f"{str(e)}\n{traceback.format_exc()}"
         self.result = string_io.getvalue()
     
     def to_dict(self)->Dict[str, Any]:
@@ -72,7 +73,9 @@ file_name = "{file.filename}"
 """)]
 
         spark = myspark.MySpark(cluster=self.cluster, file=self.file)
+        display = myspark.display
         self.vars['spark'] = spark
+        self.vars['display'] = display
 
     def save_cells(self, cells: list[Cell]):
         old_cell_map:dict[str,Cell] = {} 
@@ -85,13 +88,11 @@ file_name = "{file.filename}"
 
         for cell in cells:
             if cell.id in old_cell_map:
-                print("exists cell id", cell.id, flush=True)
                 #retain errors and results
                 old_cell = old_cell_map[cell.id]
                 old_cell.content = cell.content
                 new_cells.append(old_cell)
             else:
-                print("not exists cell id", cell.id, flush=True)
                 cell.vars=self.vars
                 new_cells.append(cell)
         self.cells = new_cells

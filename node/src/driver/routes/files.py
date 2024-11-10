@@ -60,13 +60,14 @@ def get_slice(id:str, parts:int, part:int):
     parts = int(parts)
     part = int(part)
 
-    try:    
-        user = get_user()
-    except Exception as e:
-        return {"error":str(e)},401
+    #Todo: authenticate worker server
+    # try:    
+    #     user = get_user()
+    # except Exception as e:
+    #     return {"error":str(e)},401
 
     try:
-        file = db.get_file(file_id=id, user_id=user.id)
+        file = db.get_file(file_id=id)
     except Exception as e:
         return {"error":str(e)},404
     

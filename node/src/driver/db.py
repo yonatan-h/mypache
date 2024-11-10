@@ -141,10 +141,10 @@ class DB:
     
  
 
-    def get_file(self, file_id:str, user_id:str)->File:
+    def get_file(self, file_id:str, user_id:str|None=None)->File:
         for file in self._files:
             if file.id == file_id:
-                if file.user_id != user_id:
+                if user_id !=None and file.user_id != user_id:
                     raise Exception("File not owned by user")
                 return file
 

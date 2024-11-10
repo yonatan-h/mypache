@@ -2,7 +2,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Dict, Any
 
-class Operator(Enum):
+class Operator(str, Enum):
     Greater = ">"
     Lesser = "<"
 

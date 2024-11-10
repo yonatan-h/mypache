@@ -17,7 +17,7 @@ class WorkerDataFrame:
         self.nth_file_slice = nth_file_slice
 
         if len(self.columns) != len(self.rows[0].values):
-            raise ValueError("Columns and rows length mismatch")
+            raise ValueError(f"Columns and rows length mismatch, columns: {len(self.columns)}, rows: {len(self.rows[0].values)}")
         self.id = str(randint(1000, 10000))
         self._num_bytes = -1 
 

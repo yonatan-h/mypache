@@ -37,7 +37,7 @@ class Read:
 
     def load(self, filename:str):
         if filename != self.myspark.file.filename:
-            raise ValueError("File not found")
+            raise ValueError(f"File not found, expected {self.myspark.file.filename}")
         
         df = DataFrame(self.myspark)
         return df
@@ -91,6 +91,8 @@ class DataFrame:
             col_names = col_line.split(",")
             for name in col_names:
                 columns.append(Column(name))
+        
+        if not columns: raise ValueError("No columns found")
 
         #Todo: make parallel async requests
         workers = self.myspark.cluster.workers
@@ -99,8 +101,10 @@ class DataFrame:
                 "file_id": self.myspark.file.id,
                 "slices": len(workers),
                 "slice": i,
-                "columns": [c.to_dict() for c in self.columns]
+                "columns": [c.to_dict() for c in columns]
             })
+            if res.status_code != 200:
+                raise ValueError(res.json().get('error'))
             dict = res.json()
             worker_dfs.append(WorkerDataframeDTO.from_dict(dict))
         
@@ -123,6 +127,10 @@ class DataFrame:
             res = requests.post(f"{worker.address}/instruction/filter/{worker_df.id}", json={
                 "condition": condition.to_dict() 
             })
+
+            if res.status_code != 200:
+                raise ValueError(res.json().get('error'))
+
             new_worker_df = WorkerDataframeDTO.from_dict(res.json())
             new_worker_dfs.append(new_worker_df)
         return DataFrame(self.myspark, worker_dfs=new_worker_dfs)
@@ -143,14 +151,14 @@ class DataFrame:
 
 ##exec
 
-# # File location and type
-# file_location = "mycsv.csv"
-# file_type = "csv"
+# File location and type
+file_location = "mycsv.csv"
+file_type = "csv"
 
-# # CSV options
-# infer_schema = "true"
-# first_row_is_header = "true"
-# delimiter = ","
+# CSV options
+infer_schema = "true"
+first_row_is_header = "true"
+delimiter = ","
 
 # spark = MySpark(
 #     cluster=Cluster(
@@ -159,7 +167,7 @@ class DataFrame:
 #         user_id="1", ),
 #         file=File("mycsv.csv", "1")
 # )
-# # The applied options are for CSV files. For other file types, these will be ignored.
+# The applied options are for CSV files. For other file types, these will be ignored.
 # df = spark.read.format(file_type) \
 #   .option("inferSchema", infer_schema) \
 #   .option("header", first_row_is_header) \

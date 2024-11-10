@@ -16,32 +16,45 @@ def new_worker_df():
     slices:int|None = res_json.get("slices")
     slice:int|None = res_json.get("slice")
 
-    if not file_id: return {"error":"No file_id provided"},400
-    if not slices: return {"error":"No slices provided"},400
-    if not slice: return {"error":"No slice provided"},400
-    if not res_json.get('columns'): return {"error":"No columns provided"},400
+    if file_id==None: return {"error":"No file_id provided"},400
+    if slices==None: return {"error":"No slices provided"},400
+    if slice==None: return {"error":"No slice provided"},400
+    if res_json.get('columns')==None: return {"error":"No columns provided"},400
 
     try:
         columns:list[myspark.Column] = []
+        print(res_json.get('columns'), flush=True)
         for col in res_json.get('columns'):
             columns.append(myspark.Column.from_dict(col))
+        
+        if not columns:
+            return {"error":"No columns provided"}, 400
+
     except Exception as e:
         return {"error":str(e)},400
 
     #todo: get address from env variable
-    res = requests.get(f"http://localhost:5000/files/{file_id}/sliced/{slices}/{slice}")
+    res = requests.get(f"http://driver-service:5000/files/{file_id}/sliced/{slices}/{slice}")
     if res.status_code != 200:
         return { "error":res.json() },res.status_code
     
     data = res.text
     rows:list[myspark.Row] = []
-    for i,line in enumerate(data.split("\n")):
+    for line in data.split("\n"):
         if line == "": continue
-        raw_values = json.loads(line)  
-        if not isinstance(raw_values, list):
-            return {"error":f"Invalid data format in line {i}"},400
-        
-        values:list[myspark.Value] = raw_values
+        #Todo: find better hack
+        raw_values = line.split(",")
+        values:list[myspark.Value] = []
+        for raw_val in raw_values:
+            try:
+                val = int(raw_val)
+            except:
+                try:
+                    val = float(raw_val)
+                except:
+                    val = raw_val
+            values.append(val)
+            
         rows.append(myspark.Row(values))
 
     try:
