@@ -2,7 +2,7 @@ from __future__ import annotations
 from driver.models.cluster import Cluster, ClusterRuntime
 from driver.models.file import File
 from driver.models.worker import Worker
-from myspark.shared.shared import Condition
+from myspark.shared.shared import Condition, Column, Row
 from random import randint
 
 
@@ -117,16 +117,6 @@ class DataFrame:
     
 
 
-
-class Column:
-    name:str
-    def __init__(self, name:str) -> None:
-        self.name = name
-
-class Row:
-    values: list[str|float|int]
-    def __init__(self, values: list[str|float|int]) -> None:
-        self.values = values
 
 
 ##exec

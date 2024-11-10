@@ -4,6 +4,7 @@ from flask import Flask
 from time import sleep
 from threading import Thread
 from os import environ
+from worker.routes.instruction import bp as instruction_bp
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -11,7 +12,7 @@ log.setLevel(logging.ERROR)
 
 #like a heart beat
 def tell_driver(my_addr:str):
-
+    return
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
@@ -31,6 +32,9 @@ def tell_driver(my_addr:str):
 def create_app():
     app = Flask(__name__)
     Thread(target=tell_driver, args=(environ['ADDR'],), daemon=True).start()
+
+    
+    app.register_blueprint(instruction_bp)
     print(f"Worker #{environ['NAME']} is running")
     return app
 

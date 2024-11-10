@@ -36,3 +36,18 @@ class Condition:
 
 Operand = str | int | float | Condition
     
+
+class Column:
+    name:str
+    def __init__(self, name:str) -> None:
+        self.name = name
+    def to_dict(self):
+        return {"name": self.name}
+
+class Row:
+    values: list[str|float|int]
+    def __init__(self, values: list[str|float|int]) -> None:
+        self.values = values
+    def to_dict(self):
+        return {"values": self.values}
+

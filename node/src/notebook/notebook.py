@@ -71,7 +71,7 @@ class Notebook:
 file_name = "{file.filename}"
 """)]
 
-        spark = myspark.MySpark(self.cluster)
+        spark = myspark.MySpark(cluster=self.cluster, file=self.file)
         self.vars['spark'] = spark
 
     def save_cells(self, cells: list[Cell]):
