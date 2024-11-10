@@ -1,6 +1,7 @@
 from __future__ import annotations
 from myspark.shared.shared import Column, Row, Condition, Operator, WorkerDataframeDTO
 from random import randint
+import sys
 
 
 class WorkerDataFrame:
@@ -8,6 +9,7 @@ class WorkerDataFrame:
     rows: list[Row]
     id: str
     nth_file_slice:int
+    _num_bytes:int 
 
     def __init__(self, columns: list[Column], rows: list[Row], nth_file_slice:int) -> None:
         self.columns = columns
@@ -17,8 +19,23 @@ class WorkerDataFrame:
         if len(self.columns) != len(self.rows[0].values):
             raise ValueError("Columns and rows length mismatch")
         self.id = str(randint(1000, 10000))
+        self._num_bytes = -1 
 
 
+    def calculate_size(self): #O(n) i think
+
+        num_bytes = 0
+        for col in self.columns:
+            num_bytes += sys.getsizeof(col.name)
+        
+        num_bytes += sys.getsizeof(self.rows)
+        for row in self.rows:
+            num_bytes += sys.getsizeof(row.values)
+            for val in row.values:
+                num_bytes += sys.getsizeof(val)
+
+        self._num_bytes = num_bytes
+        return num_bytes
     
     def print(self):
         print("\n-- Table --")
@@ -82,13 +99,23 @@ class WorkerDataFrame:
 
         return WorkerDataFrame(columns=new_cols, rows=new_rows, nth_file_slice=0)
     
-    def to_dict(self, num_rows:int = 10):
+    def get_size(self)->int:
+        if self._num_bytes == -1:
+            self._num_bytes = self.calculate_size()
+        return self._num_bytes
+    
+    def to_dict(self, num_rows:int = 10, include_size:bool=True):
+        num_bytes = self._num_bytes
+        if include_size:
+            num_bytes = self.get_size()
+
         dto = WorkerDataframeDTO(
             id=self.id,
             columns=self.columns,
             sliced_rows=self.rows[0:num_rows],
             num_rows=len(self.rows),
-            nth_file_slice=self.nth_file_slice
+            nth_file_slice=self.nth_file_slice,
+            num_bytes=num_bytes
         )
 
         return dto.to_dict()
@@ -103,5 +130,5 @@ wdf = WorkerDataFrame(columns=[Column("x"), Column('y')], rows=[
 
 wdf.print()
 wdf.filter(Condition(left="x", operator=Operator.Lesser, right=2)).print()
-    
+print(wdf.calculate_size())
 

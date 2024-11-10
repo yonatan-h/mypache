@@ -70,13 +70,15 @@ class WorkerDataframeDTO:
     sliced_rows: list[Row]
     num_rows: int
     nth_file_slice:int
+    num_bytes:int
 
-    def __init__(self, id:str, columns: list[Column], sliced_rows: list[Row], num_rows: int, nth_file_slice:int) -> None:
+    def __init__(self, id:str, columns: list[Column], sliced_rows: list[Row], num_rows: int, nth_file_slice:int, num_bytes:int) -> None:
         self.id = id
         self.columns = columns
         self.sliced_rows = sliced_rows
         self.num_rows = num_rows
         self.nth_file_slice = nth_file_slice
+        self.num_bytes = num_bytes
     
     def to_dict(self)->Dict[str, Any ]:
         return {
@@ -84,12 +86,13 @@ class WorkerDataframeDTO:
             "columns": [c.to_dict() for c in self.columns],
             "sliced_rows": [r.to_dict() for r in self.sliced_rows],
             "num_rows": self.num_rows,
-            "nth_file_slice": self.nth_file_slice
+            "nth_file_slice": self.nth_file_slice,
+            "num_bytes":self.num_bytes
         }
     
     @staticmethod
     def from_dict(data: Dict[str, Any])->WorkerDataframeDTO:
-        req_keys = ["id", "columns", "sliced_rows", "num_rows", "nth_file_slice"]
+        req_keys = ["id", "columns", "sliced_rows", "num_rows", "nth_file_slice", "num_bytes"]
         for key in req_keys:
             if key not in data:
                 raise ValueError(f"{key} is required")
@@ -99,5 +102,6 @@ class WorkerDataframeDTO:
             columns=[Column.from_dict(c) for c in data["columns"]],
             sliced_rows=[Row.from_dict(r) for r in data["sliced_rows"]],
             num_rows=data["num_rows"],
-            nth_file_slice=data["nth_file_slice"]
+            nth_file_slice=data["nth_file_slice"],
+            num_bytes=data["num_bytes"]
         )
