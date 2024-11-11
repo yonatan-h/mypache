@@ -74,7 +74,6 @@ def get_slice(id:str, parts:int, part:int):
     #Todo: improve
     content:list[str] = []
     with open(f"/tmp/{file.filename}") as original_file:
-        print(original_file, flush=True)
         content = original_file.readlines()
     
     sliced_name = random_id()
