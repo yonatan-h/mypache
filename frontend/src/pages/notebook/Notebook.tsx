@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useGetNotebook, useRunNotebook } from "@/services/notebook";
 import { Notebook } from "@/types/notebook";
 import { useEffect, useState } from "react";
+import { BsFillEggFill } from "react-icons/bs";
 import { MdAdd } from "react-icons/md";
 import { useParams } from "react-router-dom";
 import CellComponent from "./components/Cell";
@@ -13,6 +14,7 @@ export default function NotebookPage() {
   const runQ = useRunNotebook();
 
   const [notebook, setNotebook] = useState<Notebook | null>(null);
+  const [showAddLastCell, setShowAddLastCell] = useState(false);
 
   useEffect(() => {
     if (!notebookQ.data) return;
@@ -55,7 +57,7 @@ export default function NotebookPage() {
     setNotebook(newNotebook);
   };
 
-  // Todo: remove on prod
+  //debugging stuff
   const lastCell = notebook?.cells[notebook.cells.length - 1];
   useEffect(() => {
     if (!lastCell) return;
@@ -63,27 +65,42 @@ export default function NotebookPage() {
     localStorage.setItem("cell", lastCell?.content);
   }, [lastCell?.content]);
 
+  useEffect(() => {
+    const show = localStorage.getItem("showAddLastCell") === "true";
+    if (show) setShowAddLastCell(true);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("showAddLastCell", showAddLastCell.toString());
+  }, [showAddLastCell]);
+
   return (
     <div className="flex flex-col gap-6 max-w-[1200px] m-auto">
-      <Button
-        onClick={() => {
-          addCell(localStorage.getItem("cell") || "print('h')");
-        }}
-      >
-        Add last cell
-      </Button>
+      {showAddLastCell && (
+        <Button
+          onClick={() => {
+            addCell(localStorage.getItem("cell") || "print('h')");
+          }}
+        >
+          Add last cell (for debugging)
+        </Button>
+      )}
       {notebookQ.isLoading && (
         <p className="flex gap-2 items-center">
           <Loading isLoading /> Loading notebook
         </p>
       )}
       {notebook && (
-        <h1 className="font-bold text-xl">
-          {notebook?.cluster.name} |{" "}
-          <span className="bg-muted p-1 text-sm text-foreground/70 border">
-            {notebook?.cluster.runtime.lang}
-          </span>
-        </h1>
+        <div className="flex flex-wrap justify-between items-center">
+          <h1 className="font-bold text-xl">
+            {notebook?.cluster.name} |{" "}
+            <span className="bg-muted p-1 text-sm text-foreground/70 border">
+              {notebook?.cluster.runtime.lang}
+            </span>
+          </h1>
+          <button onClick={() => setShowAddLastCell(!showAddLastCell)}>
+            <BsFillEggFill className="text-sm" />
+          </button>
+        </div>
       )}
       {notebook?.cells.map((c, index) => (
         <CellComponent
