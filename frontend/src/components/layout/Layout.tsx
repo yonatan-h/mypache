@@ -18,8 +18,8 @@ export default function Layout() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="px-6 bg-foreground text-background flex justify-between items-center p-2">
+    <div className="flex flex-col">
+      <div className="h-[5vh] px-6 bg-foreground text-background flex justify-between items-center">
         <Link
           to="/app"
           className="flex items-center gap-3 text font-bold text-background/90 "
@@ -32,7 +32,7 @@ export default function Layout() {
           {meQ.data && meQ.data.id[0]}
         </Button>
       </div>
-      <div className="flex-1 flex ">
+      <div className="flex-1 flex max-h-[95vh]">
         <nav
           className={`
              pt-2 bg-foreground border-y text-background/80
@@ -61,7 +61,7 @@ export default function Layout() {
             {open && <span className="text-center ">Collapse Menu</span>}
           </button>
         </nav>
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 overflow-y-scroll">
           <Outlet />
         </main>
       </div>
