@@ -129,6 +129,7 @@ class DataFrame:
             })
 
             if res.status_code != 200:
+                print("json is", res.json())
                 raise ValueError(res.json().get('error'))
 
             new_worker_df = WorkerDataframeDTO.from_dict(res.json())

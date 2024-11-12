@@ -2,7 +2,6 @@ from flask import Blueprint, request
 from worker.db import db
 import myspark
 import requests
-import json
 
 bp = Blueprint('instruction', __name__, url_prefix='/instruction')
 
@@ -81,18 +80,18 @@ def filter_df(id:str):
     if not raw_json:
         return {"error":"No json provided"},400
 
-    raw_condition = raw_json.get('raw_condition')
+    raw_condition = raw_json.get('condition')
     if not raw_condition:
         return {"error":"No condition provided"},400
     
     try:
-        condition = myspark.Condition.from_dict(json.loads(raw_condition))
+        condition = myspark.Condition.from_dict(raw_condition)
     except Exception as e:
         return {"error":str(e)},400
     
     df = db.get_df(id)
     try:
-        new_df = df.filter(condition)
+        new_df = df.filter(condition) 
     except Exception as e:
         return {"error":str(e)},500
     
