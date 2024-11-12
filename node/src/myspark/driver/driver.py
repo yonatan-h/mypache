@@ -58,6 +58,15 @@ def display(df:DataFrame):
         
     print("-"*len(df.columns)*5)
 
+    #extra infos
+    memories:list[str] = []
+    sum_memory = 0
+    for worker_df in df.worker_dfs:
+        memories.append(str(round(worker_df.num_bytes/1024/1000,3))+" MB")
+        sum_memory += worker_df.num_bytes/1024/1000
+    print(f"{len(memories)} workers, Total Memory usage:","+".join(memories),"=",round(sum_memory,3),"MB" )
+
+
 class DataFrame:
     id:str
     myspark: MySpark

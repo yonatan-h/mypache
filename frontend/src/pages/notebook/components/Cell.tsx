@@ -50,6 +50,7 @@ export default function CellComponent({
             <BiPlay />
           </Button>
         )}
+
         <Button variant={"ghost"} className="w-6 h-5" onClick={remove}>
           <AiFillDelete />
         </Button>
