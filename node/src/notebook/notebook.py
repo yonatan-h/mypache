@@ -68,8 +68,22 @@ class Notebook:
         self._original_keys = set(globals().keys()) 
 
         self.cells = [Cell(self.vars, content=f"""\
-# File location
-file_name = "{file.filename}"
+# File location and type
+file_name = "{self.file.filename}"
+file_type = "csv"
+
+# CSV options
+infer_schema = "true"
+first_row_is_header = "true"
+delimiter = ","
+
+df = spark.read.format(file_type) \
+  .option("inferSchema", infer_schema) \
+  .option("header", first_row_is_header) \
+  .option("sep", delimiter) \
+  .load(file_name)
+
+display(df)
 """)]
 
         spark = myspark.MySpark(cluster=self.cluster, file=self.file)
