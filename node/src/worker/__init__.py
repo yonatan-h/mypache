@@ -14,12 +14,13 @@ log.setLevel(logging.ERROR)
 def tell_driver(my_addr:str):
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
+    driver_addr = environ['DRIVER_ADDR']
 
     print("Telling driver to start working...", flush=True)
     wait = 3
     while True:
         try:
-             requests.post('http://driver-service:5000/workers/register', json={
+             requests.post(f'{driver_addr}/workers/register', json={
                 "address": my_addr
             })
         except requests.exceptions.RequestException as e:

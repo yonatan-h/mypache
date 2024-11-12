@@ -48,8 +48,15 @@ def display(df:DataFrame):
         print(df.columns[i].name, end="\t")
     print()
 
+    #max rows = 25
+    num_rows = 0
+    for worker_df in df.worker_dfs:
+        num_rows += len(worker_df.sliced_rows)
+    
+    num_rows_per_worker = num_rows // len(df.worker_dfs)
+
     print("-"*len(df.columns)*5)
-    for i, worker_df in enumerate(df.worker_dfs):
+    for i, worker_df in enumerate(df.worker_dfs[0:num_rows_per_worker]):
         for i,row in enumerate(worker_df.sliced_rows):
             for val in row.values:
                 print(val, end="\t")

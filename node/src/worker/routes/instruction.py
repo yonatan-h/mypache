@@ -1,12 +1,15 @@
 from flask import Blueprint, request
 from worker.db import db
 import myspark
+from os import environ
 import requests
 
 bp = Blueprint('instruction', __name__, url_prefix='/instruction')
 
 @bp.post('new')
 def new_worker_df():
+
+    driver_addr = environ['DRIVER_ADDR']
     res_json = request.json
     if not res_json:
         return {"error": "No json provided"},400
@@ -33,7 +36,7 @@ def new_worker_df():
         return {"error":str(e)},400
 
     #todo: get address from env variable
-    res = requests.get(f"http://driver-service:5000/files/{file_id}/sliced/{slices}/{slice}")
+    res = requests.get(f"{driver_addr}/files/{file_id}/sliced/{slices}/{slice}")
     if res.status_code != 200:
         return { "error":res.json() },res.status_code
     

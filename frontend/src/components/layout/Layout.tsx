@@ -18,7 +18,7 @@ export default function Layout() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <div className="h-[5vh] px-6 bg-foreground text-background flex justify-between items-center">
         <Link
           to="/app"

@@ -19,30 +19,29 @@ services:
     ports:
       - 5001:5001
     environment:
+      - PORT=5001
       - NAME=Worker_One
       - ADDR=http://worker-service1:5001
+      - DRIVER_ADDR=http://driver-service:5000
     depends_on:
       - driver-service
 
-  # worker-service2:
-  #   build: ./worker_node
-  #   volumes:
-  #     - ./worker_node:/app
-  #     - /app/venv
-  #   ports:
-  #     - 5002:5001
-  #   environment:
-  #     - NAME=w_two
-
-  # worker-service3:
-  #   build: ./worker_node
-  #   volumes:
-  #     - ./worker_node:/app
-  #     - /app/venv
-  #   ports:
-  #     - 5003:5001
-  #   environment:
-  #     - NAME=w_three
+  worker-service2:
+    build:
+      context: ./node
+      dockerfile: Dockerfile.worker
+    volumes:
+      - ./node:/app
+      - /app/venv
+    ports:
+      - 5002:5002
+    environment:
+      - PORT=5002
+      - NAME=Worker_Two
+      - ADDR=http://worker-service2:5002
+      - DRIVER_ADDR=http://driver-service:5000
+    depends_on:
+      - driver-service
 
   frontend-service:
     build: ./frontend
